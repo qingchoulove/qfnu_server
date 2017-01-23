@@ -5,9 +5,10 @@ use common\Util;
 
 class HomeController extends BaseController
 {
-    
+
     public function index () {
-        $res = $this->casService->login('2012416747', '930528');
+
+        $res = $this->urpService->getAllGrade('2012416747');
         Util::Dump($res);
     }
 }

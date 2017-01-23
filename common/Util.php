@@ -1,7 +1,7 @@
 <?php
 namespace common;
 
-class Util 
+class Util
 {
     public static function dump($data) {
         echo "<pre>";
@@ -9,11 +9,20 @@ class Util
         echo "</pre>";
     }
 
-    public static function UUID() {
+    /**
+     * 生成UUID
+     */
+    public static function UUID(): string {
         return md5(uniqid());
     }
 
-    public static function Curl($url, $cookie = null, $data = null) {
+    /**
+     * 发送curl请求
+     * @param string
+     * @param string|null
+     * @param array|null
+     */
+    public static function Curl(string $url, string $cookie = null, array $data = null): string {
         $ch = curl_init();
         //设置选项，包括URL
         curl_setopt($ch, CURLOPT_URL, $url);
