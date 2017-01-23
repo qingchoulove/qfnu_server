@@ -17,7 +17,8 @@ $container['logger'] = function ($c) {
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
 };
-
-$container['component'] = function ($c) {
-    return new common\Component($c);
+// redis
+$container['cache'] = function ($c) {
+    $settings = $c->get('settings')['redis'];
+    return new Predis\Client($settings);
 };

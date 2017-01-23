@@ -31,6 +31,12 @@ return [
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
+        ],
+        'redis' => [
+            'scheme'   => 'tcp',
+            'host'     => 'redis',
+            'port'     => 6379,
+            'database' => 0
         ]
     ],
 ];
