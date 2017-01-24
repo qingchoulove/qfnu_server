@@ -24,7 +24,7 @@ class UrpService extends BaseService {
         if (!$result) {
             throw new Exception("登录失败", 1);
         }
-        $cookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_URP .$userId);
+        return $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_URP .$userId);
     }
 
     /**
@@ -38,20 +38,111 @@ class UrpService extends BaseService {
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
 
-        $table = explode("<td valign=",$content);
+        $table = explode('<td valign=', $content);
         foreach ($table as $key => $value) {
-            $tableArr[] = $this->parseTable($value);
+            $tableArr[] = $this->parseTable('<td valign=' . $value);
         }
         unset($tableArr[0]);
         foreach ($tableArr as $key => &$value) {
             foreach ($value as $k => &$v) {
-                $v = (0 == $k) ? substr($v[0], 9) : $v;
+                $v = (0 == $k) ? $v[0] : $v;
                 if (count($v) < 6 && 0 !== $k) {
                     unset($value[$k]);
                 }
             }
         }
         return $tableArr;
+    }
+
+    /**
+     * 查询本学期成绩
+     * @param  string
+     * @return [type]
+     */
+    public function getCurrentGrade(string $userId): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/bxqcjcxAction.do';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        if (strstr($content, "开关已关闭")) {
+            throw new Exception("成绩查询已关闭");
+        } else if (strstr($content, '评教')) {
+            throw new Exception("请评教后再查询");
+        }
+        preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
+        foreach ($table[0] as $key => $value) {
+            $tableArr[] = $this->parseTable($value);
+        }
+        if (empty($tableArr)) {
+            return [];
+        }
+        foreach ($tableArr as $key => &$value) {
+            $value = $value[0];
+        }
+        return $tableArr;
+    }
+
+    /**
+     * 获取不及格成绩
+     * @param  string
+     * @return [type]
+     */
+    public function getFailingGrade(string $userId): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=bjg';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
+        foreach ($table[0] as $key => $value) {
+            $tableArr[] = $this->parseTable($value);
+        }
+        foreach ($tableArr as $key => &$value) {
+            $value = $value[0];
+        }
+        return $tableArr;
+    }
+
+    /**
+     * TODO:空闲自习室查询
+     * @param  string
+     * @param  int
+     * @param  int
+     * @param  int
+     * @param  int
+     * @return [type]
+     */
+    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/xszxcxAction.do?oper=tjcx';
+        $params = [
+            'zxxnxq' => '2016-2017-2-1',
+            'zxXaq' => '2',
+            'zxJxl' => 'R01',
+            'zxJc' => '1',
+            'zxxq' => '1',
+            'zxZc' => '1'
+        ];
+        $content = Util::Curl($url, $cookie, $params);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        Util::Dump($content);
+        return [];
+    }
+
+    /**
+     * 获取评教列表
+     * @param  string
+     * @return [type]
+     */
+    public function getEvaluationList(string $userId): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/jxpgXsAction.do';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        preg_match_all('/\d+#@\d+#@\S+#@\S+#@\S+#@\d+/', $content, $list);
+        foreach ($list[0] as $key => &$value) {
+            $value[]=explode("#@", $value);
+        }
+        return $list[0];
     }
 
     /**
