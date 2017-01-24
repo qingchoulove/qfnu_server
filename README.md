@@ -1,26 +1,18 @@
-# Slim Framework 3 Skeleton Application
+# 掌上曲园服务端程序
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+> 为以后的小程序、微信、react-native提供接口
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
-
-## Install the Application
-
-Run this command from the directory in which you want to install your new Slim Framework application.
-
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
-
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
-
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
-
-To run the application in development, you can also run this command. 
-
-	php composer.phar start
-
-Run this command to run the test suite
-
-	php composer.phar test
-
-That's it! Now go build something cool.
+## 设计功能:
+### 新闻
+ - 首页新闻
+ - 教务通知
+ - 校园活动
+### 教务
+ - 成绩
+ - 评教
+ - 课表
+ - 自习室
+### 图书馆
+ - 借阅信息
+ - 催还通知
+### 轻社交(TODO)
