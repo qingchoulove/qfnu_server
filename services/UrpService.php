@@ -28,6 +28,31 @@ class UrpService extends BaseService {
     }
 
     /**
+     * 获取学籍信息
+     * @param  string
+     * @return [type]
+     */
+    public function getUserInfo(string $userId): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/xjInfoAction.do?oper=xjxx';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        $fields = [
+            'name' => '姓名',
+            'faculty' => '系所',
+            'profession' => '专业方向'
+        ];
+        foreach ($fields as $key => $value) {
+            $value = substr($content, strpos($content, $value));
+            $firstTd = strpos($value, '</td>') + 5;
+            $value = substr($value, $firstTd, strpos($value, '</td>', $firstTd));
+            $value = trim(strip_tags($value));
+            $fieldValue[$key] = $value;
+        }
+        return $fieldValue;
+    }
+
+    /**
      * 获取全部成绩
      * @param  string
      * @return [type]
@@ -140,7 +165,7 @@ class UrpService extends BaseService {
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all('/\d+#@\d+#@\S+#@\S+#@\S+#@\d+/', $content, $list);
         foreach ($list[0] as $key => &$value) {
-            $value[]=explode("#@", $value);
+            $value[] = explode("#@", $value);
         }
         return $list[0];
     }
