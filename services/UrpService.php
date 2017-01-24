@@ -17,12 +17,12 @@ class UrpService extends BaseService {
     private function getCookie(string $userId):string {
         $account = $this->accountService->getAccountByUserId($userId);
         if (empty($account)) {
-            throw new Exception("账户不存在", 1);
+            throw new Exception("账户不存在");
         }
         $password = $account['password'];
         $result = $this->casService->login($userId, $password, Constants::AUTHSERVER_TYPE_URP);
         if (!$result) {
-            throw new Exception("登录失败", 1);
+            throw new Exception("登录失败");
         }
         return $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_URP .$userId);
     }
@@ -39,6 +39,7 @@ class UrpService extends BaseService {
         $content = iconv('GB2312', 'UTF-8', $content);
         $fields = [
             'name' => '姓名',
+            'campus' => '校区',
             'faculty' => '系所',
             'profession' => '专业方向'
         ];

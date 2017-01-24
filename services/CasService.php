@@ -70,19 +70,24 @@ class CasService extends BaseService {
         $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
         $url = self::AUTHSERVER_BASE . Constants::$authServerTypeUrl[$type];
         $content = Util::Curl($url, $casCookie);
+        preg_match('/http:\/\/\S+/', $content, $location);
+        $content = Util::Curl($location[0]);
+        preg_match('/http:\/\/\S+/', $content, $location);
+        preg_match('/JSESSIONID=\S+;/', $content, $cookie);
+        $content = Util::Curl($location[0], $cookie[0]);
         if ($type == Constants::AUTHSERVER_TYPE_URP) {
-            preg_match('/http:\/\/\S+/', $content, $location);
-            $content = Util::Curl($location[0]);
-            preg_match('/http:\/\/\S+/', $content, $location);
-            preg_match('/JSESSIONID=\S+;/', $content, $cookie);
-            $content = Util::Curl($location[0], $cookie[0]);
             $content = iconv('GB2312', 'UTF-8', $content);
-            if (strstr($content, "学分制综合教务")) {
-                $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type .$user, 1800, $cookie[0]);
-                return  true;
+            if (strpos($content, "学分制综合教务") == -1) {
+                return  false;
             }
-            return false;
         }
-        return false;
+        if ($type == Constants::AUTHSERVER_TYPE_LIB_RZ) {
+            $content = iconv('GB2312', 'UTF-8', $content);
+            if (strpos($content, 'reader/infoList') == -1) {
+                return false;
+            }
+        }
+        $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type .$user, 1800, $cookie[0]);
+        return true;
     }
 }
