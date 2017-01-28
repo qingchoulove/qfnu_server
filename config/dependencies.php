@@ -3,6 +3,14 @@
 
 $container = $app->getContainer();
 
+// error handler
+$container['errorHandler'] = function ($c) {
+    return new common\errorHandler($c);
+};
+$container['phpErrorHandler'] = function ($c) {
+    return new common\errorHandler($c);
+};
+
 // view renderer
 $container['renderer'] = function ($c) {
     $settings = $c->get('settings')['renderer'];
