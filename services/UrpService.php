@@ -172,6 +172,21 @@ class UrpService extends BaseService {
     }
 
     /**
+     * 获取课程表
+     * @param  string
+     * @return [type]
+     */
+    public function getCurriculum(string $userId): array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://202.194.188.19/xkAction.do?actionType=6';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        $tableArr = $this->parseTable($content);
+        Util::Dump($tableArr);
+        return [];
+    }
+
+    /**
      * 解析table
      * @param  string
      * @return [type]

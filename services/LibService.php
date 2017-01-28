@@ -21,4 +21,18 @@ class LibService extends BaseService {
         return $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_LIB_RZ .$userId);
     }
 
+    /**
+     * 查询借阅信息 TODO
+     * @param  string
+     * @return [type]
+     */
+    public function getBorrowBooks(string $userId):array {
+        $cookie = $this->getCookie($userId);
+        $url = 'http://219.218.26.4:85/opac_two/reader/jieshuxinxi.jsp';
+        $content = Util::Curl($url, $cookie);
+        $content = iconv('GB2312', 'UTF-8', $content);
+        Util::Dump(htmlspecialchars($content));
+        return [];
+    }
+
 }
