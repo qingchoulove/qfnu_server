@@ -6,10 +6,11 @@ use common\Util;
 class HomeController extends BaseController
 {
 
-    public function index () {
-
-        // $res = $this->urpService->getFreeRoom('2012416747', 1, 1, 1, 1);
-        $res = $this->urpService->getCurriculum('2012416747');
-        Util::Dump($res);
+    public function index ($request, $response) {
+        $result = [
+            'status' => true,
+            'message' => 'hello world'
+        ];
+        return $response->withJson($result);
     }
 }
