@@ -1,17 +1,20 @@
 <?php
 
 namespace services;
+
 use common\Util;
 use models\NewsModel;
 
-class NewsService extends BaseService {
+class NewsService extends BaseService
+{
 
     /**
      * 查看新闻详情
      * @param  string
      * @return [type]
      */
-    public function getNewsById(string $id): array {
+    public function getNewsById(string $id): array
+    {
         $data = NewsModel::where('new_id', $id)
             ->first();
         return empty($data) ? null : $data->toArray();
@@ -24,7 +27,8 @@ class NewsService extends BaseService {
      * @param  int
      * @return [type]
      */
-    public function getNewsByType(int $type, int $offset, int $limit): array {
+    public function getNewsByType(int $type, int $offset, int $limit): array
+    {
         $data = NewsModel::where('type', $type)
             ->orderBy('apply_time', 'desc')
             ->skip($offset)
@@ -32,5 +36,4 @@ class NewsService extends BaseService {
             ->get();
         return empty($data) ? null : $data->toArray();
     }
-
 }

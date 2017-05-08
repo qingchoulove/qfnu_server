@@ -6,7 +6,8 @@ namespace middlewares;
  * 日志中间件
  * 在请求到达时记录请求信息
  */
-class LoggerMiddleware extends BaseMiddleware {
+class LoggerMiddleware extends BaseMiddleware
+{
 
     public function __invoke($request, $response, $next)
     {

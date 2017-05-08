@@ -1,14 +1,18 @@
 <?php
 namespace services;
+
 use Exception;
 use common\Util;
 use common\Constants;
+
 /**
 * 日照校区图书馆
 */
-class LibService extends BaseService {
+class LibService extends BaseService
+{
 
-    public function getCookie(string $userId):string {
+    public function getCookie(string $userId):string
+    {
         $account = $this->accountService->getAccountByUserId($userId);
         if (empty($account)) {
             throw new Exception("账户不存在");
@@ -26,7 +30,8 @@ class LibService extends BaseService {
      * @param  string
      * @return [type]
      */
-    public function getBorrowBooks(string $userId):array {
+    public function getBorrowBooks(string $userId):array
+    {
         $cookie = $this->getCookie($userId);
         $url = 'http://219.218.26.4:85/opac_two/reader/jieshuxinxi.jsp';
         $content = Util::Curl($url, $cookie);
@@ -34,5 +39,4 @@ class LibService extends BaseService {
         Util::Dump(htmlspecialchars($content));
         return [];
     }
-
 }

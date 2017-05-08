@@ -1,11 +1,18 @@
 <?php
 namespace middlewares;
 
-class BaseMiddleware {
-    
-    protected static $app;
+use common\Component;
 
-    public function __construct($c) {
-        static::$app = $c;
+class BaseMiddleware extends Component
+{
+
+    public function __construct($c)
+    {
+        $this->setContainer($c);
+    }
+
+    public function __get($name)
+    {
+        return $this->get($name);
     }
 }

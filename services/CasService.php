@@ -7,7 +7,8 @@ use common\Constants;
 /**
  * 曲阜师范大学信息门户
  */
-class CasService extends BaseService {
+class CasService extends BaseService
+{
 
     const AUTHSERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login?service=';
 
@@ -17,7 +18,8 @@ class CasService extends BaseService {
      * @param  int 密码
      * @return bool 是否登录成功
      */
-    public function loginCas(string $user, int $password): bool {
+    public function loginCas(string $user, int $password): bool
+    {
         $url = self::AUTHSERVER_BASE . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
 
         if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $user)) {
@@ -60,7 +62,8 @@ class CasService extends BaseService {
      * @param  int
      * @return bool
      */
-    public function login(string $user, string $password, int $type): bool {
+    public function login(string $user, string $password, int $type): bool
+    {
         if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $type .$user)) {
             return true;
         }
