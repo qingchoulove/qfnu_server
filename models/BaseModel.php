@@ -14,7 +14,8 @@ class BaseModel extends Model
     protected $rules = [];
     protected $errors = [];
 
-    function __construct($attributes = []) {
+    function __construct($attributes = [])
+    {
         parent::__construct($attributes);
     }
 }
