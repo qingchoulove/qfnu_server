@@ -40,8 +40,7 @@ class AccountService extends BaseService
 
     /**
      * 更新用户信息
-     * @param  array
-     * @return [type]
+     * @param  array 用户信息
      */
     public function updateAccount(array $account)
     {

@@ -3,7 +3,7 @@ namespace common;
 
 class Util
 {
-    public static function dump($data)
+    public static function Dump($data)
     {
         echo "<pre>";
         var_dump($data);

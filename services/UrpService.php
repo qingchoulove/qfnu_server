@@ -14,7 +14,7 @@ class UrpService extends BaseService
     /**
      * 获取cookie
      * @param  string
-     * @return [type]
+     * @return string
      */
     private function getCookie(string $userId):string
     {
@@ -33,7 +33,7 @@ class UrpService extends BaseService
     /**
      * 获取学籍信息
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getUserInfo(string $userId): array
     {
@@ -60,7 +60,7 @@ class UrpService extends BaseService
     /**
      * 获取全部成绩
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getAllGrade(string $userId):array
     {
@@ -88,7 +88,7 @@ class UrpService extends BaseService
     /**
      * 查询本学期成绩
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getCurrentGrade(string $userId): array
     {
@@ -117,7 +117,7 @@ class UrpService extends BaseService
     /**
      * 获取不及格成绩
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getFailingGrade(string $userId): array
     {
@@ -165,7 +165,7 @@ class UrpService extends BaseService
     /**
      * 获取评教列表
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getEvaluationList(string $userId): array
     {
@@ -183,7 +183,7 @@ class UrpService extends BaseService
     /**
      * 获取课程表
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getCurriculum(string $userId): array
     {
@@ -199,7 +199,7 @@ class UrpService extends BaseService
     /**
      * 解析table
      * @param  string
-     * @return [type]
+     * @return array
      */
     private function parseTable(string $html):array
     {

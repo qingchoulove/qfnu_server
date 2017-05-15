@@ -28,7 +28,7 @@ class LibService extends BaseService
     /**
      * 查询借阅信息 TODO
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getBorrowBooks(string $userId):array
     {

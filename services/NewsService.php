@@ -11,7 +11,7 @@ class NewsService extends BaseService
     /**
      * 查看新闻详情
      * @param  string
-     * @return [type]
+     * @return array
      */
     public function getNewsById(string $id): array
     {
@@ -25,7 +25,7 @@ class NewsService extends BaseService
      * @param  int
      * @param  int
      * @param  int
-     * @return [type]
+     * @return array
      */
     public function getNewsByType(int $type, int $offset, int $limit): array
     {
