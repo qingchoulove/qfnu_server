@@ -136,19 +136,22 @@ class UrpService extends BaseService
     }
 
     /**
-     * TODO:空闲自习室查询
+     * 空闲自习室查询
      * @param  string 学号
      * @param  int 校区
      * @param  int 教学楼
+     * @param  int 周次
      * @param  int 星期
      * @param  int 节次
      * @return array
      */
-    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time):array
+    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time, int $session):array
     {
         $schoolYear = Util::SchoolYear();
-        if ($this->cache->exists('free_' . $schoolYear . '_' . $campus . $building . $week .$time)) {
-            return unserialize($this->cache->get('free_' . $schoolYear . '_' . $campus . $building . $week .$time));
+        $paramKey = 'free_' . implode("_", [$schoolYear, $campus, $building, $week, $time, $session]);
+
+        if ($this->cache->exists($paramKey)) {
+            return unserialize($this->cache->get($paramKey));
         }
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xszxcxAction.do?oper=xszxcx_lb';
@@ -156,12 +159,12 @@ class UrpService extends BaseService
         $url = 'http://202.194.188.19/xszxcxAction.do?oper=tjcx';
         $params = [
             'zxxnxq' => $schoolYear,
-            'zxXaq' => '2',
-            'zxJxl' => 'R03',
-            'zxJc' => '1',
-            'zxxq' => '6',
-            'zxZc' => '1',
-            'pageSize' => '100'
+            'zxXaq' => $campus,
+            'zxJxl' => Constants::$buildings[$campus][$building],
+            'zxJc' => $session,
+            'zxxq' => $time,
+            'zxZc' => $week,
+            'pageSize' => '500'
         ];
         $content = Util::Curl($url, $cookie, $params);
         $content = iconv('GB2312', 'UTF-8', $content);
@@ -172,7 +175,7 @@ class UrpService extends BaseService
         foreach ($tableArr as $key => &$value) {
             $value = $value[0];
         }
-        $this->cache->set('free_' . $schoolYear . '_' . $campus . $building . $week .$time, serialize($tableArr));
+        $this->cache->set($paramKey, serialize($tableArr));
         return $tableArr;
     }
 
