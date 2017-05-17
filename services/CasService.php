@@ -15,18 +15,18 @@ class CasService extends BaseService
     /**
      * 登录信息门户
      * @param  string 学号
-     * @param  int 密码
+     * @param  string 密码
      * @return bool 是否登录成功
      */
-    public function loginCas(string $user, int $password): bool
+    public function loginCas(string $user, string $password): bool
     {
         $url = self::AUTHSERVER_BASE . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
-
+        // 如果cookie存在则先使用原cookie验证
         if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $user)) {
-            $content = Util::Curl($url, $this->cache->get('Constants::CAS_COOKIE_PREFIX . $user'));
-        }
-        if (strstr($content, 'welcomeMsg')) {
-            return true;
+            $content = Util::Curl($url, $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user));
+            if (strstr($content, 'welcomeMsg')) {
+                return true;
+            }
         }
         // 抓取页面参数
         $content = Util::Curl($url);
@@ -64,9 +64,11 @@ class CasService extends BaseService
      */
     public function login(string $user, string $password, int $type): bool
     {
-        if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $type .$user)) {
+        // 检查本系统cookie是否存在
+        if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $type . '_' . $user)) {
             return true;
         }
+        // 检查CAS cookie是否失效
         if (!$this->loginCas($user, $password)) {
             return false;
         }
@@ -78,19 +80,19 @@ class CasService extends BaseService
         preg_match('/http:\/\/\S+/', $content, $location);
         preg_match('/JSESSIONID=\S+;/', $content, $cookie);
         $content = Util::Curl($location[0], $cookie[0]);
-        if ($type == Constants::AUTHSERVER_TYPE_URP) {
+        if ($type === Constants::AUTHSERVER_TYPE_URP) {
             $content = iconv('GB2312', 'UTF-8', $content);
             if (strpos($content, "学分制综合教务") == -1) {
                 return  false;
             }
         }
-        if ($type == Constants::AUTHSERVER_TYPE_LIB_RZ) {
+        if ($type === Constants::AUTHSERVER_TYPE_LIB_RZ) {
             $content = iconv('GB2312', 'UTF-8', $content);
             if (strpos($content, 'reader/infoList') == -1) {
                 return false;
             }
         }
-        $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type .$user, 1800, $cookie[0]);
+        $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type . '_' .$user, 1800, $cookie[0]);
         return true;
     }
 }

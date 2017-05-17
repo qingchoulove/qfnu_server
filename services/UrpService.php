@@ -27,7 +27,7 @@ class UrpService extends BaseService
         if (!$result) {
             throw new Exception("登录失败");
         }
-        return $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_URP .$userId);
+        return $this->cache->get(Constants::CAS_COOKIE_PREFIX . Constants::AUTHSERVER_TYPE_URP . '_'  . $userId);
     }
 
     /**
@@ -90,7 +90,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getCurrentGrade(string $userId): array
+    public function getCurrentGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/bxqcjcxAction.do';
@@ -119,7 +119,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getFailingGrade(string $userId): array
+    public function getFailingGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=bjg';
@@ -144,22 +144,36 @@ class UrpService extends BaseService
      * @param  int 节次
      * @return array
      */
-    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time): array
+    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time):array
     {
+        $schoolYear = Util::SchoolYear();
+        if ($this->cache->exists('free_' . $schoolYear . '_' . $campus . $building . $week .$time)) {
+            return unserialize($this->cache->get('free_' . $schoolYear . '_' . $campus . $building . $week .$time));
+        }
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xszxcxAction.do?oper=xszxcx_lb';
+        Util::Curl($url, $cookie);
+        $url = 'http://202.194.188.19/xszxcxAction.do?oper=tjcx';
         $params = [
-            'zxxnxq' => '2016-2017-2-1',
+            'zxxnxq' => $schoolYear,
             'zxXaq' => '2',
-            'zxJxl' => 'R01',
+            'zxJxl' => 'R03',
             'zxJc' => '1',
-            'zxxq' => '1',
-            'zxZc' => '1'
+            'zxxq' => '6',
+            'zxZc' => '1',
+            'pageSize' => '100'
         ];
         $content = Util::Curl($url, $cookie, $params);
         $content = iconv('GB2312', 'UTF-8', $content);
-        Util::Dump($content);
-        return [];
+        preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
+        foreach ($table[0] as $key => $value) {
+            $tableArr[] = $this->parseTable($value);
+        }
+        foreach ($tableArr as $key => &$value) {
+            $value = $value[0];
+        }
+        $this->cache->set('free_' . $schoolYear . '_' . $campus . $building . $week .$time, serialize($tableArr));
+        return $tableArr;
     }
 
     /**
@@ -167,7 +181,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getEvaluationList(string $userId): array
+    public function getEvaluationList(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/jxpgXsAction.do';
@@ -185,7 +199,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getCurriculum(string $userId): array
+    public function getCurriculum(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xkAction.do?actionType=6';

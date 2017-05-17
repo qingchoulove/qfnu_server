@@ -51,7 +51,7 @@ class Util
      * 生成指定长度随机Key
      * @param integer $length [description]
      */
-    function RandomKey(int $length = 32):string
+    public static function RandomKey(int $length = 32):string
     {
         if ($length > 32 || $length < 8) {
             $length = 32;
@@ -65,5 +65,16 @@ class Util
         if (function_exists('openssl_random_pseudo_bytes')) {
             return bin2hex(openssl_random_pseudo_bytes($length));
         }
+    }
+
+    public static function SchoolYear():string
+    {
+        $month = date("m");
+        if ($month < 8) {
+            $year = date('Y', strtotime('-1 year')) . '-' . date('Y') . '-2-1';
+        } else {
+            $year = date('Y') . '-' . date('Y', strtotime('+1 year')) . '-1-1';
+        }
+        return $year;
     }
 }

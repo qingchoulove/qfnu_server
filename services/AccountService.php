@@ -13,7 +13,7 @@ class AccountService extends BaseService
      * @param  string 学号
      * @return array 用户信息
      */
-    public function getAccountByUserId(string $userId): array
+    public function getAccountByUserId(string $userId):array
     {
         $data = AccountModel::where('user_id', $userId)
             ->first();
