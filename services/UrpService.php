@@ -35,7 +35,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getUserInfo(string $userId): array
+    public function getUserInfo(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xjInfoAction.do?oper=xjxx';

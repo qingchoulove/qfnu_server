@@ -1,13 +1,13 @@
 <?php
 
-namespace forms;
+namespace validators;
 
 use common\Util;
 
 /**
 * 测试表单
 */
-class TestForm extends BaseForm
+class TestValidator extends BaseValidator
 {
 
     public function attributes():array
@@ -24,7 +24,6 @@ class TestForm extends BaseForm
             [['username', 'password'], 'require'],
             ['password', function($attribute) {
                 $data = $this->getData();
-                Util::Dump($data);
                 if ($data[$attribute] == '123456') {
                     $this->addError($attribute, '密码不能是123456');
                 }
