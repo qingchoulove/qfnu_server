@@ -77,4 +77,34 @@ class Util
         }
         return $year;
     }
+
+    /**
+     * 解析table
+     * @param  string
+     * @return array
+     */
+    public static function ParseTable(string $html):array
+    {
+
+        $table = preg_replace("'<tr[^>]*?>'si", "", $html);
+        $table = preg_replace("'<td[^>]*?>'si", "", $table);
+        $table = str_replace("</tr>", "{tr}", $table);
+        $table = str_replace("</td>", "{td}", $table);
+        //去 HTML 标记
+        $table = preg_replace("'<[\/\!]*?[^<>]*?>'si", "", $table);
+        $table=str_replace("&nbsp;", "", $table);
+        //去空白字符
+        $table = preg_replace("'([\r\n])[\s]+'", "", $table);
+        $table = str_replace(" ", "", $table);
+        $table = str_replace(" ", "", $table);
+        $table = explode('{tr}', $table);
+        array_pop($table);
+        foreach ($table as $key => $tr) {
+            $td = explode('{td}', $tr);
+            array_pop($td);
+            $td = str_replace(" ", "", $td);
+            $tdArr[] = $td;
+        }
+        return $tdArr;
+    }
 }

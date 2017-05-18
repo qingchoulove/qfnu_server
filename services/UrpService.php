@@ -71,7 +71,7 @@ class UrpService extends BaseService
 
         $table = explode('<td valign=', $content);
         foreach ($table as $key => $value) {
-            $tableArr[] = $this->parseTable('<td valign=' . $value);
+            $tableArr[] = Util::ParseTable('<td valign=' . $value);
         }
         unset($tableArr[0]);
         foreach ($tableArr as $key => &$value) {
@@ -103,7 +103,7 @@ class UrpService extends BaseService
         }
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
         foreach ($table[0] as $key => $value) {
-            $tableArr[] = $this->parseTable($value);
+            $tableArr[] = Util::ParseTable($value);
         }
         if (empty($tableArr)) {
             return [];
@@ -127,7 +127,7 @@ class UrpService extends BaseService
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
         foreach ($table[0] as $key => $value) {
-            $tableArr[] = $this->parseTable($value);
+            $tableArr[] = Util::ParseTable($value);
         }
         foreach ($tableArr as $key => &$value) {
             $value = $value[0];
@@ -170,7 +170,7 @@ class UrpService extends BaseService
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
         foreach ($table[0] as $key => $value) {
-            $tableArr[] = $this->parseTable($value);
+            $tableArr[] = Util::ParseTable($value);
         }
         foreach ($tableArr as $key => &$value) {
             $value = $value[0];
@@ -208,38 +208,9 @@ class UrpService extends BaseService
         $url = 'http://202.194.188.19/xkAction.do?actionType=6';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
-        $tableArr = $this->parseTable($content);
+        $tableArr = Util::ParseTable($content);
+        //TODO: 待完善
         Util::Dump($tableArr);
         return [];
-    }
-
-    /**
-     * 解析table
-     * @param  string
-     * @return array
-     */
-    private function parseTable(string $html):array
-    {
-
-        $table = preg_replace("'<tr[^>]*?>'si", "", $html);
-        $table = preg_replace("'<td[^>]*?>'si", "", $table);
-        $table = str_replace("</tr>", "{tr}", $table);
-        $table = str_replace("</td>", "{td}", $table);
-        //去 HTML 标记
-        $table = preg_replace("'<[\/\!]*?[^<>]*?>'si", "", $table);
-        $table=str_replace("&nbsp;", "", $table);
-        //去空白字符
-        $table = preg_replace("'([\r\n])[\s]+'", "", $table);
-        $table = str_replace(" ", "", $table);
-        $table = str_replace(" ", "", $table);
-        $table = explode('{tr}', $table);
-        array_pop($table);
-        foreach ($table as $key => $tr) {
-            $td = explode('{td}', $tr);
-            array_pop($td);
-            $td = str_replace(" ", "", $td);
-            $tdArr[] = $td;
-        }
-        return $tdArr;
     }
 }
