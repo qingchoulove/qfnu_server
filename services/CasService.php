@@ -11,7 +11,7 @@ use Exception;
 class CasService extends BaseService
 {
 
-    const AUTHSERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login?service=';
+    const AUTHSERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login';
 
     /**
      * 登录信息门户
@@ -19,21 +19,22 @@ class CasService extends BaseService
      * @param  string 密码
      * @return bool 是否登录成功
      */
-    public function loginCas(string $user, string $password): bool
+    public function loginCas(string $user, string $password, string $captcha = null):bool
     {
-        $url = self::AUTHSERVER_BASE . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
-        // 如果cookie存在则先使用原cookie验证
-        if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $user)) {
-            $content = Util::Curl($url, $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user));
-            if (strstr($content, 'welcomeMsg')) {
+        $url = self::AUTHSERVER_BASE .'?service=' . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
+        $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
+        $content = Util::Curl($url, $casCookie);
+        if (strpos($content, '302 Found')) {
+            preg_match('/http:\/\/\S+/', $content, $location);
+            $content = Util::Curl($location[0]);
+            preg_match('/http:\/\/\S+/', $content, $location);
+            if ($location[0] ==  Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME]) {
                 return true;
             }
-            $this->cache->del(Constants::CAS_COOKIE_PREFIX . $user);
         }
-        // 抓取页面参数
-        $content = Util::Curl($url);
         preg_match('/JSESSIONID=\S+;/', $content, $cookie);
         preg_match('/LT-\d+-[A-Za-z0-9]+-\d+/', $content, $ltKey);
+        // 发送POST请求进行登陆
         $data = [
             'username' => $user,
             'password' => $password,
@@ -42,20 +43,20 @@ class CasService extends BaseService
             '_eventId' => 'submit',
             'submit' => '登录'
         ];
-        // 发送POST请求进行登陆
         $content = Util::Curl($url, $cookie[0], $data);
-        if (strpos($content, '您提供的用户名或者密码有误')) {
+        if (strpos($content, 'cannot be determined to be authentic')) {
             throw new Exception("用户名或者密码有误");
+        }
+        if (strpos($content, 'Please enter captcha')) {
+            throw new Exception("请输入验证码");
         }
         // 截取跳转地址及cookie
         preg_match('/http:\/\/\S+/', $content, $location);
         preg_match('/CASTGC=\S+;/', $content, $casCookie);
-        $content = Util::Curl($location[0], $casCookie[0]);
+        $content = Util::Curl($location[0]);
         preg_match('/http:\/\/\S+/', $content, $location);
-        preg_match('/JSESSIONID=\S+;/', $content, $cookie);
-        $content = Util::Curl($location[0], $cookie[0]);
-        if (strpos($content, 'welcomeMsg')) {
-            $this->cache->set(Constants::CAS_COOKIE_PREFIX . $user, $cookie[0] . $casCookie[0]);
+        if ($location[0] == Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME]) {
+            $this->cache->set(Constants::CAS_COOKIE_PREFIX . $user, $casCookie[0]);
             return true;
         }
         return false;
@@ -78,7 +79,7 @@ class CasService extends BaseService
             return false;
         }
         $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
-        $url = self::AUTHSERVER_BASE . Constants::$authServerTypeUrl[$type];
+        $url = self::AUTHSERVER_BASE .'?service=' . Constants::$authServerTypeUrl[$type];
         $content = Util::Curl($url, $casCookie);
         preg_match('/http:\/\/\S+/', $content, $location);
         $content = Util::Curl($location[0]);
@@ -108,5 +109,20 @@ class CasService extends BaseService
         }
         $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type . '_' .$user, 1800, $cookie);
         return true;
+    }
+
+    /**
+     * 是否需要验证码
+     * @param  string
+     * @return bool
+     */
+    public function needCaptcha(string $userId):bool
+    {
+        $url = 'http://ids.qfnu.edu.cn/authserver/needCaptcha.html?username='. $userId . '&_=' . time();
+        $content = Util::Curl($url);
+        if (strpos($content, 'true')) {
+            return true;
+        }
+        return false;
     }
 }
