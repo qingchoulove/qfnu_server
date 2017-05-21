@@ -11,11 +11,4 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
     protected $dateFormat = 'U';
-    protected $rules = [];
-    protected $errors = [];
-
-    function __construct($attributes = [])
-    {
-        parent::__construct($attributes);
-    }
 }

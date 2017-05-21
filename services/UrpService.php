@@ -18,11 +18,7 @@ class UrpService extends BaseService
      */
     private function getCookie(string $userId):string
     {
-        $account = $this->accountService->getAccountByUserId($userId);
-        if (empty($account)) {
-            throw new Exception("账户不存在");
-        }
-        $password = $account['password'];
+        $password = $this->accountService->getPasswordByUserId($userId);
         $result = $this->casService->login($userId, $password, Constants::AUTHSERVER_TYPE_URP);
         if (!$result) {
             throw new Exception("登录失败");
@@ -54,6 +50,7 @@ class UrpService extends BaseService
             $value = trim(strip_tags($value));
             $fieldValue[$key] = $value;
         }
+        $fieldValue['campus'] = $fieldValue['campus'] === '曲阜' ? Constants::CAMPUS_QF : Constants::CAMPUS_RZ;
         return $fieldValue;
     }
 

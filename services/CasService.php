@@ -3,6 +3,7 @@ namespace services;
 
 use common\Util;
 use common\Constants;
+use Exception;
 
 /**
  * 曲阜师范大学信息门户
@@ -27,6 +28,7 @@ class CasService extends BaseService
             if (strstr($content, 'welcomeMsg')) {
                 return true;
             }
+            $this->cache->del(Constants::CAS_COOKIE_PREFIX . $user);
         }
         // 抓取页面参数
         $content = Util::Curl($url);
@@ -42,6 +44,9 @@ class CasService extends BaseService
         ];
         // 发送POST请求进行登陆
         $content = Util::Curl($url, $cookie[0], $data);
+        if (strpos($content, '您提供的用户名或者密码有误')) {
+            throw new Exception("用户名或者密码有误");
+        }
         // 截取跳转地址及cookie
         preg_match('/http:\/\/\S+/', $content, $location);
         preg_match('/CASTGC=\S+;/', $content, $casCookie);
@@ -49,7 +54,7 @@ class CasService extends BaseService
         preg_match('/http:\/\/\S+/', $content, $location);
         preg_match('/JSESSIONID=\S+;/', $content, $cookie);
         $content = Util::Curl($location[0], $cookie[0]);
-        if (strstr($content, 'welcomeMsg')) {
+        if (strpos($content, 'welcomeMsg')) {
             $this->cache->set(Constants::CAS_COOKIE_PREFIX . $user, $cookie[0] . $casCookie[0]);
             return true;
         }
@@ -77,22 +82,31 @@ class CasService extends BaseService
         $content = Util::Curl($url, $casCookie);
         preg_match('/http:\/\/\S+/', $content, $location);
         $content = Util::Curl($location[0]);
-        preg_match('/http:\/\/\S+/', $content, $location);
-        preg_match('/JSESSIONID=\S+;/', $content, $cookie);
-        $content = Util::Curl($location[0], $cookie[0]);
+        preg_match('#Set-Cookie:.+;#i', $content, $cookie);
+        $cookie = trim(str_replace('Set-Cookie:', '', $cookie[0]));
         if ($type === Constants::AUTHSERVER_TYPE_URP) {
+            preg_match('/http:\/\/\S+/', $content, $location);
+            $content = Util::Curl($location[0], $cookie);
             $content = iconv('GB2312', 'UTF-8', $content);
             if (strpos($content, "学分制综合教务") == -1) {
                 return  false;
             }
         }
         if ($type === Constants::AUTHSERVER_TYPE_LIB_RZ) {
+            preg_match('/http:\/\/\S+/', $content, $location);
+            $content = Util::Curl($location[0], $cookie);
             $content = iconv('GB2312', 'UTF-8', $content);
             if (strpos($content, 'reader/infoList') == -1) {
                 return false;
             }
         }
-        $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type . '_' .$user, 1800, $cookie[0]);
+        if ($type === Constants::AUTHSERVER_TYPE_LIB_QF) {
+            $content = Util::Curl('http://202.194.184.2:808/museweb/dzjs/login_form.asp', $cookie);
+            if (strpos($content, '您已登录') == -1) {
+                return false;
+            }
+        }
+        $this->cache->setex(Constants::CAS_COOKIE_PREFIX . $type . '_' .$user, 1800, $cookie);
         return true;
     }
 }

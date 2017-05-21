@@ -11,11 +11,13 @@ class Constants
     const AUTHSERVER_TYPE_HOME = 0;
     const AUTHSERVER_TYPE_URP = 1;
     const AUTHSERVER_TYPE_LIB_RZ = 2;
+    const AUTHSERVER_TYPE_LIB_QF = 3;
 
     public static $authServerTypeUrl = [
         self::AUTHSERVER_TYPE_HOME => 'http://my.qfnu.edu.cn/index.portal',
         self::AUTHSERVER_TYPE_URP => 'http://202.194.188.19/caslogin.jsp',
-        self::AUTHSERVER_TYPE_LIB_RZ => 'http://219.218.26.4:85/opac_two/login/caslogin.jsp'
+        self::AUTHSERVER_TYPE_LIB_RZ => 'http://219.218.26.4:85/opac_two/login/caslogin.jsp',
+        self::AUTHSERVER_TYPE_LIB_QF => 'http://202.194.184.2:808/museweb/dzjs/caslogin.asp'
     ];
 
     const CAMPUS_QF = 1;
