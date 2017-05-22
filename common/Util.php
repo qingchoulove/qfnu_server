@@ -50,6 +50,12 @@ class Util
         return $output;
     }
 
+    /**
+     * 获取网络资源
+     * @param string
+     * @param string|null
+     * @param string
+     */
     public static function GetFile(string $url, string $cookie = null)
     {
         $ch = curl_init();
