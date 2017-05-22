@@ -50,6 +50,22 @@ class Util
         return $output;
     }
 
+    public static function GetFile(string $url, string $cookie = null)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        if (!empty($cookie)) {
+            curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+        }
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return $output;
+    }
+
     /**
      * 生成指定长度随机Key
      * @param integer $length [description]

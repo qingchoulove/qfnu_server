@@ -43,6 +43,9 @@ class CasService extends BaseService
             '_eventId' => 'submit',
             'submit' => '登录'
         ];
+        if (!empty($captcha)) {
+            $data['captchaResponse'] = $captcha;
+        }
         $content = Util::Curl($url, $cookie[0], $data);
         if (strpos($content, 'cannot be determined to be authentic')) {
             throw new Exception("用户名或者密码有误");
@@ -56,7 +59,7 @@ class CasService extends BaseService
         $content = Util::Curl($location[0]);
         preg_match('/http:\/\/\S+/', $content, $location);
         if ($location[0] == Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME]) {
-            $this->cache->set(Constants::CAS_COOKIE_PREFIX . $user, $casCookie[0]);
+            $this->cache->set(Constants::CAS_COOKIE_PREFIX . $user, $cookie[0] . $casCookie[0]);
             return true;
         }
         return false;
@@ -97,13 +100,13 @@ class CasService extends BaseService
             preg_match('/http:\/\/\S+/', $content, $location);
             $content = Util::Curl($location[0], $cookie);
             $content = iconv('GB2312', 'UTF-8', $content);
-            if (strpos($content, 'reader/infoList') == -1) {
+            if (strpos($content, 'reader/infoList') === false) {
                 return false;
             }
         }
         if ($type === Constants::AUTHSERVER_TYPE_LIB_QF) {
             $content = Util::Curl('http://202.194.184.2:808/museweb/dzjs/login_form.asp', $cookie);
-            if (strpos($content, '您已登录') == -1) {
+            if (strpos($content, '您已登录') === false) {
                 return false;
             }
         }
@@ -124,5 +127,18 @@ class CasService extends BaseService
             return true;
         }
         return false;
+    }
+
+    /**
+     * 获取base64编码验证码图片
+     * @param  string
+     * @return string
+     */
+    public function getCaptcha(string $userId):string
+    {
+        $cookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $userId);
+        $url = 'http://ids.qfnu.edu.cn/authserver/captcha.html';
+        $image = Util::GetFile($url, $cookie);
+        return base64_encode($image);
     }
 }
