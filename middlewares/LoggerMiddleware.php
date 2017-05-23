@@ -15,7 +15,7 @@ class LoggerMiddleware extends BaseMiddleware
         $uri = $request->getUri();
         $headers = $request->getHeaders();
         $parsedBody = $request->getParsedBody();
-        static::$app->logger->info($method . ':' . $uri . "\r\nheader:" .json_encode($headers) . "\r\nbody:" . json_encode($parsedBody));
+        $this->logger->info($method . ':' . $uri . "\r\nheader:" .json_encode($headers) . "\r\nbody:" . json_encode($parsedBody));
         $response = $next($request, $response);
         return $response;
     }
