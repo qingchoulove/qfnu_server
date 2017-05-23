@@ -4,11 +4,11 @@
 $container = $app->getContainer();
 
 // error handler
-$container['errorHandler'] = function ($c) {
-    return new common\ErrorHandler($c);
+$container['errorHandler'] = function () {
+    return new common\ErrorHandler;
 };
-$container['phpErrorHandler'] = function ($c) {
-    return new common\ErrorHandler($c);
+$container['phpErrorHandler'] = function () {
+    return new common\ErrorHandler;
 };
 
 // view renderer

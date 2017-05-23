@@ -2,21 +2,13 @@
 
 namespace common;
 
-class ErrorHandler
+class ErrorHandler extends Component
 {
-
-    private static $app;
-    private static $displayErrorDetails;
-
-    public function __construct($app)
-    {
-        static::$app = $app;
-        static::$displayErrorDetails = $app['settings']['displayErrorDetails'];
-    }
-
     public function __invoke($request, $response, $exception)
     {
-        $logger = static::$app->get('logger');
+        $logger = $this->get('logger');
+        $displayErrorDetails = $this->get('settings')['displayErrorDetails'];
+        // TODO: 待优化
         $body = [
             'message' => $exception->getMessage()
         ];
@@ -25,13 +17,12 @@ class ErrorHandler
             'line' => $exception->getLine(),
             'trace' => explode("\n", $exception->getTraceAsString())
         ];
-        if (static::$displayErrorDetails) {
+        $logger->error(json_encode(array_merge($body, $detail)));
+        if ($displayErrorDetails) {
             $body = array_merge($body, $detail);
         }
-        $logger->error(json_encode(array_merge($body, $detail)));
         return $response
             ->withStatus(500)
-            ->withHeader('Content-Type', 'application/json')
-            ->write(json_encode($body));
+            ->withJson($body);
     }
 }
