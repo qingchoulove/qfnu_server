@@ -1,6 +1,8 @@
 <?php
 namespace controllers;
 
+use validate\IDMustBePositiveInt;
+
 class HomeController extends BaseController
 {
 
@@ -11,5 +13,15 @@ class HomeController extends BaseController
             'message' => 'hello world'
         ];
         return $response->withJson($result);
+    }
+
+    public function text()
+    {
+        $result = (new IDMustBePositiveInt())->goCheck();
+        if($result) {
+            return '验证成功';
+        } else {
+            return "验证失败";
+        }
     }
 }
