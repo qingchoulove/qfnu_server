@@ -6,7 +6,9 @@ use common\Constants;
 use Exception;
 
 /**
-* 教务服务
+ * 教务服务
+ * @property AccountService $accountService
+ * @property CasService $casService
 */
 class UrpService extends BaseService
 {
