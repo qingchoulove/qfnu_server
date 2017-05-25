@@ -8,6 +8,7 @@ namespace common;
 class Constants
 {
     const CAS_COOKIE_PREFIX = 'cas_cookie_';
+    const AUTH_PREFIX = 'TOKEN:';
     const AUTHSERVER_TYPE_HOME = 0;
     const AUTHSERVER_TYPE_URP = 1;
     const AUTHSERVER_TYPE_LIB_RZ = 2;
@@ -26,7 +27,7 @@ class Constants
     public static $buildings = [
         self::CAMPUS_QF => [
             0 => 'BH', 1 => 'Q01', 2 => 'Q02',
-            3 => 'Q03', 4 => 'Q04', 5 => 'Q05', 
+            3 => 'Q03', 4 => 'Q04', 5 => 'Q05',
             6 => 'Q06', 7 => 'Q07', 8 => 'Q08',
             9 => 'Q09', 10 => 'Q10', 11 => 'Q11',
             12 => 'Q12', 13 => 'Q13', 14 => 'Q14',
