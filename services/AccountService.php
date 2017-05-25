@@ -3,6 +3,7 @@ namespace services;
 
 use common\Util;
 use common\Constants;
+use Illuminate\Database\Eloquent\Model;
 use models\AccountModel;
 use Exception;
 
@@ -11,8 +12,9 @@ class AccountService extends BaseService
 
     /**
      * 根据学号查询对应密码
-     * @param  string 学号
-     * @return string 密码
+     * @param string $userId
+     * @return string
+     * @throws Exception
      */
     public function getPasswordByUserId(string $userId):string
     {
@@ -27,8 +29,9 @@ class AccountService extends BaseService
 
     /**
      * 根据学号查询用户信息
-     * @param  string 学号
+     * @param  string $userId 学号
      * @return array  用户信息
+     * @throws Exception
      */
     public function getAccountByUserId(string $userId):array
     {

@@ -14,7 +14,13 @@ use common\Util;
  */
 class HomeController extends BaseController
 {
-    public function index(Request $request, Response $response)
+    /**
+     * 工程欢迎页
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function index(Request $request, Response $response):Response
     {
         $result = [
             'status' => true,
@@ -27,9 +33,9 @@ class HomeController extends BaseController
      * 登录
      * @param Request $request
      * @param Response $response
-     * @return void
+     * @return Response
      */
-    public function login(Request $request, Response $response)
+    public function login(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
         //TODO: validate
@@ -45,9 +51,43 @@ class HomeController extends BaseController
             $result = [
                 'status' => true,
                 'message' => '登录成功',
-                'data' => ['token' => $token]
+                'data' => $token
             ];
         }
         return $response->withJson($result);
+    }
+
+    /**
+     * 查询时候需要验证码
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function needCaptcha(Request $request, Response $response):Response
+    {
+        $data = $request->getParsedBody();
+        $isNeed = $this->casService->needCaptcha($data['user_id']);
+        return $response->withJson([
+            'status' => true,
+            'message' => '获取成功',
+            'data' => $isNeed
+        ]);
+    }
+
+    /**
+     * 获取base64编码后的验证码图片
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function captcha(Request $request, Response $response):Response
+    {
+        $data = $request->getParsedBody();
+        $captcha = $this->casService->getCaptcha($data['user_id']);
+        return $response->withJson([
+            'status' => true,
+            'message' => '获取成功',
+            'data' => $captcha
+        ]);
     }
 }
