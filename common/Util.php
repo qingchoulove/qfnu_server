@@ -110,7 +110,6 @@ class Util
      */
     public static function ParseTable(string $html):array
     {
-
         $table = preg_replace("'<tr[^>]*?>'si", "", $html);
         $table = preg_replace("'<td[^>]*?>'si", "", $table);
         $table = str_replace("</tr>", "{tr}", $table);
