@@ -82,7 +82,6 @@ class BaseValidator
         'fileSize' => '上传文件大小不符',
         'fileExt' => '上传文件后缀不符',
         'fileMime' => '上传文件类型不符',
-
     ];
 
     // 当前验证场景
@@ -115,16 +114,7 @@ class BaseValidator
     }
 
 
-    /**
-     * 设置scene
-     * @param array $scene
-     * @return $this
-     */
-    protected function setScene($scene = [])
-    {
-        $this->scene = $scene;
-        return $this;
-    }
+
 
     /**
      * 实例化验证

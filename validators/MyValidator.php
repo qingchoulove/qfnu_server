@@ -17,7 +17,7 @@ class MyValidator extends BaseValidator
     ];
 
     protected $message = [
-        'name' => 'name必须小于8位',
+        //'name' => 'name必须小于8位',
         'email'=>'email不合法'
     ];
 }
