@@ -1,8 +1,8 @@
 <?php
 namespace controllers;
 
-use EasyWeChat\Core\Exception;
 use validate\IDMustBePositiveInt;
+use validators\MyValidator;
 
 class HomeController extends BaseController
 {
@@ -18,12 +18,16 @@ class HomeController extends BaseController
 
     public function text($request, $response)
     {
-        $data = (new IDMustBePositiveInt())->scene("text")->validate();
-        if(!$data) {
-            throw new Exception('失败');
-        }
-        //TODO 作相应处理
-        return $response->withJson($data);
+        $data = [
+            'name' => 'badguy',
+            'email' => 'kang_hui1314126.com'
+        ];
 
+        $validator = (new MyValidator())->scene('my');
+        if (!$validator->validate($data)) {
+            //抛出异常
+            return $response->withJson($validator->getError());
+        }
+        return $response->withJson($validator->getAvailableAttributes());
     }
 }
