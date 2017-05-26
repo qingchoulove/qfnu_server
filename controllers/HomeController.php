@@ -18,12 +18,12 @@ class HomeController extends BaseController
 
     public function text($request, $response)
     {
-        $data = (new IDMustBePositiveInt())->validate();
+        $data = (new IDMustBePositiveInt())->scene("text")->validate();
         if(!$data) {
             throw new Exception('失败');
         }
         //TODO 作相应处理
-        return $response->withJson("success");
+        return $response->withJson($data);
 
     }
 }

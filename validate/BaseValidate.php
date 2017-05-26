@@ -17,14 +17,14 @@ class BaseValidate extends Validate
         //获取http传入参数
         //模拟数据
         $data = [
-            'id' => '12345678',
+            'id' => '123456789',
             //'email'=>'kang_hui1314@126.com'
         ];
 
         //检验
         $result = $this->check($data);
         if (!$result) {
-            throw new \Exception([
+            throw new Exception([
                 $this->error
             ]);
         } else {
