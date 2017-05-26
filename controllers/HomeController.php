@@ -1,6 +1,7 @@
 <?php
 namespace controllers;
 
+use EasyWeChat\Core\Exception;
 use validate\IDMustBePositiveInt;
 
 class HomeController extends BaseController
@@ -15,13 +16,14 @@ class HomeController extends BaseController
         return $response->withJson($result);
     }
 
-    public function text()
+    public function text($request, $response)
     {
-        $result = (new IDMustBePositiveInt())->goCheck();
-        if($result) {
-            return '验证成功';
-        } else {
-            return "验证失败";
+        $data = (new IDMustBePositiveInt())->validate();
+        if(!$data) {
+            throw new Exception('失败');
         }
+        //TODO 作相应处理
+        return $response->withJson("success");
+
     }
 }

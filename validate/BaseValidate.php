@@ -12,28 +12,39 @@ use common\Validate;
 
 class BaseValidate extends Validate
 {
-    public function goCheck()
+    public function validate()
     {
         //获取http传入参数
-        //对这些参数做校验
-//        $request = Request::instance();
-//        $params = $request->param();
-
+        //模拟数据
         $data = [
-            'id'=>'123456789',
+            'id' => '12345678',
             //'email'=>'kang_hui1314@126.com'
         ];
 
-        //设置批量验证 并检验
-        $result = $this->batch()->check($data);
+        //检验
+        $result = $this->check($data);
         if (!$result) {
-            //抛出相应异常
-            //text
-            //throw new xxxxxxxxxxxException();
-            //$msg = $this->error;
-            return false;//测试用
+            throw new \Exception([
+                $this->error
+            ]);
         } else {
-            return true;
+            $newArray = $this->getAvailableAttributes($data);
+            return $newArray;
         }
     }
+
+    /**
+     * 过滤相应参规则下的数据
+     * @param $arrays
+     * @return array
+     */
+    public function getAvailableAttributes($arrays)
+    {
+        $newArray = [];
+        foreach ($this->rule as $key => $value) {
+            $newArray[$key] = $arrays[$key];
+        }
+        return $newArray;
+    }
+
 }
