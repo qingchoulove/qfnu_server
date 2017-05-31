@@ -2,6 +2,8 @@
 namespace services;
 
 use common\Util;
+use common\Constants;
+use Illuminate\Database\Eloquent\Model;
 use models\AccountModel;
 use Exception;
 
@@ -10,8 +12,9 @@ class AccountService extends BaseService
 
     /**
      * 根据学号查询对应密码
-     * @param  string 学号
-     * @return string 密码
+     * @param string $userId
+     * @return string
+     * @throws Exception
      */
     public function getPasswordByUserId(string $userId):string
     {
@@ -26,8 +29,9 @@ class AccountService extends BaseService
 
     /**
      * 根据学号查询用户信息
-     * @param  string 学号
+     * @param  string $userId 学号
      * @return array  用户信息
+     * @throws Exception
      */
     public function getAccountByUserId(string $userId):array
     {
@@ -47,19 +51,30 @@ class AccountService extends BaseService
     }
 
     /**
+     * 根据token获取用户
+     * @param string $token
+     * @return array
+     */
+    public function getAccountByToken(string $token):array
+    {
+        $account = AccountModel::where('token', $token)
+            ->first();
+        return empty($account) ? [] : $account->toArray();
+    }
+
+    /**
      * 添加用户
      * @param array 用户信息
      */
     public function addAccount(array $account)
     {
-        $data = AccountModel::where('user_id', $account['user_id'])
+        $model = AccountModel::where('user_id', $account['user_id'])
             ->first();
-        if (!empty($data)) {
-            throw new Exception('用户不存在');
+        if (empty($model)) {
+            $model = new AccountModel();
+            $model->account_id = Util::UUID();
+            $model->user_id = $account['user_id'];
         }
-        $model = new AccountModel();
-        $model->account_id = Util::UUID();
-        $model->user_id = $account['user_id'];
         $model->password = $account['password'];
         $model->save();
     }
@@ -82,5 +97,24 @@ class AccountService extends BaseService
             $data->$key = $value;
         }
         $data->save();
+    }
+
+    /**
+     * 更新用户token
+     * @param string $accountId
+     * @param string $token
+     * @return void
+     */
+    public function updateAccountToken(string $userId, string $token)
+    {
+        $account = AccountModel::where('user_id', $userId)
+            ->first();
+        if (empty($account)) {
+            throw new Exception('用户不存在');
+        }
+        $this->cache->del(Constants::AUTH_PREFIX . $account->token);
+        $account->token = $token;
+        $account->save();
+        $this->cache->set(Constants::AUTH_PREFIX . $account->token, serialize($account->toArray()));
     }
 }
