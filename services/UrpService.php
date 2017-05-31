@@ -73,15 +73,17 @@ class UrpService extends BaseService
             $tableArr[] = Util::ParseTable('<td valign=' . $value);
         }
         unset($tableArr[0]);
-        foreach ($tableArr as $key => &$value) {
-            foreach ($value as $k => &$v) {
-                $v = (0 == $k) ? $v[0] : $v;
-                if (count($v) < 6 && 0 !== $k) {
-                    unset($value[$k]);
+        $grade = [];
+        foreach ($tableArr as $key => $value) {
+            $item = [];
+            foreach ($value as $k => $v) {
+                if (count($v) >= 6) {
+                    $item[] = $v;
                 }
             }
+            $grade[$value[0][0]] = $item;
         }
-        return $tableArr;
+        return $grade;
     }
 
     /**

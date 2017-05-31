@@ -31,4 +31,21 @@ class UrpController extends BaseController
             'data' => $grades
         ]);
     }
+
+    /**
+     * 获取当前成绩
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function getCurrentGrade(Request $request, Response $response):Response
+    {
+        $data = $request->getParsedBody();
+        $grades = $this->urpService->getCurrentGrade($data['user_id']);
+        return $response->withJson([
+            'status' => true,
+            'message' => '获取成功',
+            'data' => $grades
+        ]);
+    }
 }

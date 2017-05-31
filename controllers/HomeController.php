@@ -58,7 +58,7 @@ class HomeController extends BaseController
     }
 
     /**
-     * 查询时候需要验证码
+     * 查询是否需要验证码
      * @param Request $request
      * @param Response $response
      * @return Response
