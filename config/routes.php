@@ -1,6 +1,7 @@
 <?php
 
 use controllers\HomeController;
+use controllers\UrpController;
 
 // 测试路由
 $app->any('/', HomeController::class . ':index');
@@ -12,3 +13,7 @@ $app->group('/login', function() {
     $this->post('/captcha', HomeController::class . ':captcha');
 });
 
+$app->group('/urp', function() {
+    $this->post('/grade', UrpController::class . ':getGrade');
+    $this->post('/grade/current', UrpController::class . ':getCurrentGrade');
+})->add(new middlewares\AuthMiddleware);
