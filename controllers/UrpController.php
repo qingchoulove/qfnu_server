@@ -65,4 +65,22 @@ class UrpController extends BaseController
             'data' => $grades
         ]);
     }
+
+    /**
+     * 获取课表
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function getCurriculum(Request $request, Response $response):Response
+    {
+        $data = $request->getParsedBody();
+        $curriculum = $this->urpService->getCurriculum($data['user_id']);
+        return $response->withJson([
+            'status' => true,
+            'message' => '获取成功',
+            'data' => $curriculum
+        ]);
+    }
 }
+

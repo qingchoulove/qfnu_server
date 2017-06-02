@@ -16,4 +16,5 @@ $app->group('/urp', function() {
     $this->post('/grade', UrpController::class . ':getGrade');
     $this->post('/grade/current', UrpController::class . ':getCurrentGrade');
     $this->post('/grade/fail', UrpController::class . ':getFailGrade');
+    $this->post('/curriculum', UrpController::class . ':getCurriculum');
 })->add(new middlewares\AuthMiddleware);
