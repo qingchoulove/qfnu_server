@@ -4,11 +4,13 @@ namespace services;
 use common\Util;
 use common\Constants;
 use Exception;
+use Predis\Client;
 
 /**
  * 教务服务
  * @property AccountService $accountService
  * @property CasService $casService
+ * @property Client $cache
 */
 class UrpService extends BaseService
 {
@@ -88,8 +90,9 @@ class UrpService extends BaseService
 
     /**
      * 查询本学期成绩
-     * @param  string
+     * @param string $userId
      * @return array
+     * @throws Exception
      */
     public function getCurrentGrade(string $userId):array
     {

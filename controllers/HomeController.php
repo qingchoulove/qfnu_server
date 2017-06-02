@@ -63,31 +63,18 @@ class HomeController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function needCaptcha(Request $request, Response $response):Response
-    {
-        $data = $request->getParsedBody();
-        $isNeed = $this->casService->needCaptcha($data['user_id']);
-        return $response->withJson([
-            'status' => true,
-            'message' => '获取成功',
-            'data' => $isNeed
-        ]);
-    }
-
-    /**
-     * 获取base64编码后的验证码图片
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     */
     public function captcha(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
-        $captcha = $this->casService->getCaptcha($data['user_id']);
+        $result['is_need'] = $this->casService->needCaptcha($data['user_id']);
+        if ($result['is_need']) {
+            $result['captcha'] = $this->casService->getCaptcha($data['user_id']);
+        }
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
-            'data' => $captcha
+            'data' => $result
         ]);
     }
 }
+
