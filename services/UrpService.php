@@ -17,8 +17,9 @@ class UrpService extends BaseService
 
     /**
      * 获取cookie
-     * @param  string
+     * @param string $userId
      * @return string
+     * @throws Exception
      */
     private function getCookie(string $userId):string
     {
@@ -47,6 +48,7 @@ class UrpService extends BaseService
             'faculty' => '系所',
             'profession' => '专业方向'
         ];
+        $fieldValue = [];
         foreach ($fields as $key => $value) {
             $value = substr($content, strpos($content, $value));
             $firstTd = strpos($value, '</td>') + 5;
@@ -71,6 +73,7 @@ class UrpService extends BaseService
         $content = iconv('GB2312', 'UTF-8', $content);
 
         $table = explode('<td valign=', $content);
+        $tableArr = [];
         foreach ($table as $key => $value) {
             $tableArr[] = Util::ParseTable('<td valign=' . $value);
         }
@@ -130,24 +133,26 @@ class UrpService extends BaseService
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
+        $grade = [];
         foreach ($table[0] as $key => $value) {
-            $tableArr[] = Util::ParseTable($value);
+            $grade[] = Util::ParseTable($value);
         }
-        foreach ($tableArr as $key => &$value) {
+        foreach ($grade as $key => &$value) {
             $value = $value[0];
         }
-        return $tableArr;
+        return $grade;
     }
 
     /**
-     * 空闲自习室查询
-     * @param  string 学号
-     * @param  int 校区
-     * @param  int 教学楼
-     * @param  int 周次
-     * @param  int 星期
-     * @param  int 节次
+     * 自习室查询
+     * @param string $userId
+     * @param int $campus
+     * @param int $building
+     * @param int $week
+     * @param int $time
+     * @param int $session
      * @return array
+     * @throws Exception
      */
     public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time, int $session):array
     {
@@ -173,14 +178,15 @@ class UrpService extends BaseService
         $content = Util::Curl($url, $cookie, $params);
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
+        $room = [];
         foreach ($table[0] as $key => $value) {
-            $tableArr[] = Util::ParseTable($value);
+            $room[] = Util::ParseTable($value);
         }
-        foreach ($tableArr as $key => &$value) {
+        foreach ($room as $key => &$value) {
             $value = $value[0];
         }
-        $this->cache->set($paramKey, serialize($tableArr));
-        return $tableArr;
+        $this->cache->set($paramKey, serialize($room));
+        return $room;
     }
 
     /**
@@ -212,9 +218,19 @@ class UrpService extends BaseService
         $url = 'http://202.194.188.19/xkAction.do?actionType=6';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
-        $tableArr = Util::ParseTable($content);
-        //TODO: 待完善
-        Util::Dump($tableArr);
-        return [];
+        preg_match_all('#<tr bgcolor=[^>]*?>[\s\S]*?</tr>#i', $content, $table);
+        $curriculum = [];
+        foreach ($table[0] as $key => $value) {
+            $tr = reset(Util::ParseTable($value));
+            if ($key % 4 == 0) {
+                $tr = array_slice($tr, 2);
+            } else if ($key == 3 || $key == 7) {
+                $tr = array_slice($tr, 1, 7);
+            } else {
+                $tr = array_slice($tr, 1);
+            }
+            $curriculum[] = $tr;
+        }
+        return $curriculum;
     }
 }
