@@ -108,6 +108,7 @@ class BaseValidator
      */
     public function __construct(array $rules = [], $message = [], $field = [])
     {
+        //TODO: 构造函数只传入$data, 对验证器进行实例化
         $this->rule = array_merge($this->rule, $rules);
         $this->message = array_merge($this->message, $message);
         $this->field = array_merge($this->field, $field);
@@ -139,6 +140,7 @@ class BaseValidator
      */
     public function rule($name, $rule = '')
     {
+        //TODO: 未发现内部调用,且不会再使用时更改rule
         if (is_array($name)) {
             $this->rule = array_merge($this->rule, $name);
         } else {
@@ -156,6 +158,7 @@ class BaseValidator
      */
     public static function extend($type, $callback = null)
     {
+        //TODO: 同$this->rule()
         if (is_array($type)) {
             self::$type = array_merge(self::$type, $type);
         } else {
@@ -188,6 +191,7 @@ class BaseValidator
      */
     public function message($name, $message = '')
     {
+        //TODO: 同$this->rule()
         if (is_array($name)) {
             $this->message = array_merge($this->message, $name);
         } else {
@@ -205,6 +209,8 @@ class BaseValidator
      */
     public function scene($name, $fields = null)
     {
+        //TODO: 只传入$name即可, 不需动态修改
+        // 只是指定验证时使用的验证场景
         if (is_array($name)) {
             $this->scene = array_merge($this->scene, $name);
         }
@@ -784,6 +790,7 @@ class BaseValidator
      */
     protected function method($value, $rule)
     {
+        //TODO: delete
         $method = Request::instance()->method();
         return strtoupper($rule) == $method;
     }
@@ -812,6 +819,7 @@ class BaseValidator
      */
     protected function unique($value, $rule, $data, $field)
     {
+        //TODO: delete
         if (is_string($rule)) {
             $rule = explode(',', $rule);
         }
@@ -862,6 +870,7 @@ class BaseValidator
      */
     protected function behavior($value, $rule, $data)
     {
+        //TODO: delete
         return Hook::exec($rule, '', $data);
     }
 
@@ -1093,6 +1102,7 @@ class BaseValidator
      */
     protected function expire($value, $rule)
     {
+        //TODO: delete 请求相关验证可提取为middleware
         if (is_string($rule)) {
             $rule = explode(',', $rule);
         }
@@ -1116,6 +1126,7 @@ class BaseValidator
      */
     protected function allowIp($value, $rule)
     {
+        //TODO: delete 请求相关验证可提取为middleware
         return in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
     }
 
@@ -1128,6 +1139,7 @@ class BaseValidator
      */
     protected function denyIp($value, $rule)
     {
+        //TODO: delete 请求相关验证可提取为middleware
         return !in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
     }
 
@@ -1160,6 +1172,7 @@ class BaseValidator
      */
     protected function token($value, $rule, $data)
     {
+        //TODO: delete 请求相关验证可提取为middleware
         $rule = !empty($rule) ? $rule : '__token__';
         if (!isset($data[$rule]) || !Session::has($rule)) {
             // 令牌数据无效
@@ -1226,6 +1239,7 @@ class BaseValidator
         }
 
         if (is_string($msg) && 0 === strpos($msg, '{%')) {
+            //TODO: 需修改
             $msg = Lang::get(substr($msg, 2, -1));
         }
 
