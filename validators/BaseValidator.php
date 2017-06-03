@@ -114,8 +114,6 @@ class BaseValidator
     }
 
 
-
-
     /**
      * 实例化验证
      * @access public
@@ -336,12 +334,12 @@ class BaseValidator
      * @param 过滤器
      * @return array
      */
-    public function getAvailableAttributes()
+    public function getAvailableAttribute()
     {
         $arrays = $this->data;
         $newArray = [];
         foreach ($this->rule as $key => $value) {
-            $newArray[$key] = $arrays[$key];
+            $newArray[$key] = isset($arrays[$key]) ? $arrays[$key] : null;
         }
         return $newArray;
     }
