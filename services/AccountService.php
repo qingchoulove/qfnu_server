@@ -16,7 +16,7 @@ class AccountService extends BaseService
      * @return string
      * @throws Exception
      */
-    public function getPasswordByUserId(string $userId):string
+    public function getPasswordByUserId($userId)
     {
         $data = AccountModel::where('user_id', $userId)
             ->select('password')
@@ -33,7 +33,7 @@ class AccountService extends BaseService
      * @return array  用户信息
      * @throws Exception
      */
-    public function getAccountByUserId(string $userId):array
+    public function getAccountByUserId($userId)
     {
         $data = AccountModel::where('user_id', $userId)
             ->first();
@@ -55,7 +55,7 @@ class AccountService extends BaseService
      * @param string $token
      * @return array
      */
-    public function getAccountByToken(string $token):array
+    public function getAccountByToken($token)
     {
         $account = AccountModel::where('token', $token)
             ->first();
@@ -105,7 +105,7 @@ class AccountService extends BaseService
      * @param string $token
      * @return void
      */
-    public function updateAccountToken(string $userId, string $token)
+    public function updateAccountToken($userId,  $token)
     {
         $account = AccountModel::where('user_id', $userId)
             ->first();

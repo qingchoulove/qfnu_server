@@ -21,7 +21,7 @@ class UrpController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function getGrade(Request $request, Response $response):Response
+    public function getGrade(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         $grades = $this->urpService->getAllGrade($data['user_id']);
@@ -38,7 +38,7 @@ class UrpController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function getCurrentGrade(Request $request, Response $response):Response
+    public function getCurrentGrade(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         $grades = $this->urpService->getCurrentGrade($data['user_id']);
@@ -55,7 +55,7 @@ class UrpController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function getFailGrade(Request $request, Response $response):Response
+    public function getFailGrade(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         $grades = $this->urpService->getFailingGrade($data['user_id']);
@@ -72,7 +72,7 @@ class UrpController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function getCurriculum(Request $request, Response $response):Response
+    public function getCurriculum(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         $curriculum = $this->urpService->getCurriculum($data['user_id']);
