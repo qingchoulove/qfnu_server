@@ -15,9 +15,11 @@ class CasService extends BaseService
 
     /**
      * 登录信息门户
-     * @param  string 学号
-     * @param  string 密码
-     * @return bool 是否登录成功
+     * @param string $user
+     * @param string $password
+     * @param string|null $captcha
+     * @return bool
+     * @throws Exception
      */
     public function loginCas($user, $password, $captcha = null)
     {

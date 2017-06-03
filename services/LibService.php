@@ -6,7 +6,7 @@ use common\Util;
 use common\Constants;
 
 /**
- * 图书借阅查询
+ * 图书馆服务
  * @package services
  * @property CasService $casService
  * @property AccountService $accountService
@@ -14,8 +14,16 @@ use common\Constants;
 class LibService extends BaseService
 {
 
-    private function getCookie(string $userId, int $type):string
+    /**
+     * 获取cookie
+     * @param string $userId
+     * @param int $campus
+     * @return string
+     * @throws Exception
+     */
+    private function getCookie(string $userId, int $campus):string
     {
+        $type = $campus === Constants::CAMPUS_QF ? Constants::AUTHSERVER_TYPE_LIB_QF : Constants::AUTHSERVER_TYPE_LIB_RZ;
         $password = $this->accountService->getPasswordByUserId($userId);
         $result = $this->casService->login($userId, $password, $type);
         if (!$result) {
@@ -32,9 +40,8 @@ class LibService extends BaseService
     public function getBorrowBooks(string $userId):array
     {
         $userInfo = $this->accountService->getAccountByUserId($userId);
-        $type = $userInfo['campus'] === Constants::CAMPUS_QF ? Constants::AUTHSERVER_TYPE_LIB_QF : Constants::AUTHSERVER_TYPE_LIB_RZ;
-        $cookie = $this->getCookie($userId, $type);
-        if ($type === Constants::AUTHSERVER_TYPE_LIB_QF) {
+        $cookie = $this->getCookie($userId, $userInfo['campus']);
+        if ($userInfo['campus'] === Constants::CAMPUS_QF) {
             $books = $this->getBorrowBooksQF($cookie);
         } else {
             $books = $this->getBorrowBooksRZ($cookie);
@@ -43,43 +50,21 @@ class LibService extends BaseService
     }
 
     /**
-     * 查询借阅历史
-     * @param string
-     * @return array
-     */
-    public function getBorrowHistory(string $userId):array
-    {
-        $userInfo = $this->accountService->getAccountByUserId($userId);
-        $type = $userInfo['campus'] === Constants::CAMPUS_QF ? Constants::AUTHSERVER_TYPE_LIB_QF : Constants::AUTHSERVER_TYPE_LIB_RZ;
-        $cookie = $this->getCookie($userId, $type);
-        $params = [
-            'library_id' => '%C3%8B%C3%B9%C3%93%C3%90%C2%B7%C3%96%C2%B9%C3%9D',
-            'fromdate' => '2013-5-18',
-            'todate' => '2017-5-18'
-        ];
-        $url = 'http://219.218.26.4:85/opac_two/reader/jieshulishi.jsp?' . http_build_query($params);
-        $content = Util::Curl($url, $cookie);
-        $content = iconv('GB2312', 'UTF-8', $content);
-        preg_match_all('#<tr\s+class[^>]*?>[\s\S]*?</tr>#i', $content, $table);
-        if (empty($table[0])) {
-            return [];
-        }
-        $history = [];
-        foreach ($table[0] as $key => $value) {
-            $history[] = Util::ParseTable($value)[0];
-        }
-        return $history;
-    }
-
-    /**
      * 搜索图书
      * @param string $userId
      * @param string $keyword
+     * @param int $page
      * @return array
      */
-    public function searchBook(string $userId, string $keyword):array
+    public function searchBook(string $userId, string $keyword, int $page = 1):array
     {
-
+        $userInfo = $this->accountService->getAccountByUserId($userId);
+        if ($userInfo['campus'] == Constants::CAMPUS_QF) {
+            $books = $this->searchBookQF($keyword, $page);
+        } else {
+            $books = $this->searchBookRZ($keyword, $page);
+        }
+        return $books;
     }
 
     /**
@@ -111,6 +96,53 @@ class LibService extends BaseService
     }
 
     /**
+     * 检索曲阜校区图书馆
+     * @param string $keyword
+     * @param int $page
+     * @return array
+     */
+    private function searchBookQF(string $keyword, int $page):array
+    {
+        $url = 'http://202.194.184.29:808/museweb/wxjs/tmjs.asp';
+        $params = [
+            'txtTm' => mb_convert_encoding($keyword, 'GB2312', 'UTF-8'),
+            'txtLx' => '%',
+            'txtSearchType' => 1,
+            'nSetPageSize' => 20,
+            'page' => $page
+        ];
+        $content = Util::Curl($url, null, $params);
+        $content = mb_convert_encoding($content, 'UTF-8', 'GB2312');
+        if (strpos($content, '暂时没有内容')) {
+            return [
+                'page' => ['total' => 0, 'current' => 0],
+                'books' => []
+            ];
+        }
+        preg_match('#<font color[\s\S]*?</font>\/\d+#i', $content, $pageHtml);
+        $pageHtml = strip_tags($pageHtml[0]);
+        $pageHtml = explode('/', $pageHtml);
+        $page = [
+            'total' => $pageHtml[1],
+            'current' => $pageHtml[0]
+        ];
+        preg_match_all('#<tr>\s[\s\S]*?</tr>#', $content, $tr);
+        $tr = array_slice($tr[0], 3);
+        array_pop($tr);
+        $books = [];
+        foreach ($tr as $key => $value) {
+            $book = Util::ParseTable($value)[0];
+            $books[] = [
+                $book[2], $book[3], $book[4], $book[1]
+            ];
+        }
+        return [
+            'page' => $page,
+            'books' => $books
+        ];
+    }
+
+    /**
      * 获取日照校区图书馆借阅信息
      * @param string $cookie
      * @return array
@@ -129,6 +161,55 @@ class LibService extends BaseService
             $books[] = Util::ParseTable($value)[0];
         }
         return $books;
+    }
+
+    /**
+     * 日照校区图书检索
+     * @param string $keyword
+     * @param int $page
+     * @return array
+     */
+    private function searchBookRZ(string $keyword, int $page):array
+    {
+        $url = 'http://219.218.26.4:85/opac_two/search2/searchout.jsp';
+        $params = [
+            'kind' => 'simple',
+            'show_type' => 'wenzi',
+            'snumber_type' => 'Y',
+            'search_no_type' =>'Y',
+            'suchen_type' => 1,
+            'suchen_word' => mb_convert_encoding($keyword, 'GB2312', 'UTF-8'),
+            'suchen_match' => 'qx',
+            'recordtype' => 'all',
+            'searchtimes' => 1,
+            'library_id' => 'all',
+            'size' => 20,
+            'curpage' => $page
+        ];
+        $content = Util::Curl($url, null, $params);
+        $content = mb_convert_encoding($content, 'UTF-8', 'GB2312');
+        preg_match_all('#<span class=.*?</span>#i', $content, $pageHtml);
+        if (count($pageHtml[0]) !== 6) {
+            return [
+                'page' => ['total' => 0, 'current' => 0],
+                'books' => []
+            ];
+        }
+        $page = [
+            'current' => strip_tags($pageHtml[0][2]),
+            'total' => strip_tags($pageHtml[0][3])
+        ];
+        preg_match_all('#<tr height=[\s\S]+?class=\'td_color_[\s\S]+?</tr>#i', $content, $tr);
+        $books = [];
+        foreach ($tr[0] as $key => $value) {
+            $book = Util::ParseTable($value)[0];
+            $book = [$book[1], $book[2], $book[3], $book[6]];
+            $books[] = $book;
+        }
+        return [
+            'page' => $page,
+            'books' => $books
+        ];
     }
 }
 
