@@ -24,9 +24,9 @@ class CasService extends BaseService
      * @return bool
      * @throws Exception
      */
-    public function loginCas(string $user, string $password, string $captcha = null):bool
+    public function loginCas($user, $password, $captcha = null)
     {
-        $url = self::AUTH_SERVER_BASE .'?service=' . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
+        $url = self::AUTH_SERVER_BASE . '?service=' . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
         $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
 
         $content = Util::Curl($url, $casCookie);
@@ -125,7 +125,7 @@ class CasService extends BaseService
      * @param  string
      * @return bool
      */
-    public function needCaptcha(string $userId):bool
+    public function needCaptcha($userId)
     {
         $url = 'http://ids.qfnu.edu.cn/authserver/needCaptcha.html?username='. $userId . '&_=' . time();
         $content = Util::Curl($url);
@@ -140,7 +140,7 @@ class CasService extends BaseService
      * @param  string
      * @return string
      */
-    public function getCaptcha(string $userId):string
+    public function getCaptcha($userId)
     {
         $cookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $userId);
         $url = 'http://ids.qfnu.edu.cn/authserver/captcha.html';
