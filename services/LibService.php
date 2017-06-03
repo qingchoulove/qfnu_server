@@ -6,7 +6,7 @@ use common\Util;
 use common\Constants;
 
 /**
- * 图书借阅查询
+ * 图书馆服务
  * @package services
  * @property CasService $casService
  * @property AccountService $accountService
@@ -14,6 +14,13 @@ use common\Constants;
 class LibService extends BaseService
 {
 
+    /**
+     * 获取cookie
+     * @param string $userId
+     * @param int $campus
+     * @return string
+     * @throws Exception
+     */
     private function getCookie(string $userId, int $campus):string
     {
         $type = $campus === Constants::CAMPUS_QF ? Constants::AUTHSERVER_TYPE_LIB_QF : Constants::AUTHSERVER_TYPE_LIB_RZ;
