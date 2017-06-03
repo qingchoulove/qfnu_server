@@ -63,7 +63,6 @@ class BaseValidator extends Component
         return [];
     }
 
-
     public function validate()
     {
         foreach ($this->activeRules() as $rule) {
