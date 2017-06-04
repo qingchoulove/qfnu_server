@@ -7,8 +7,6 @@
 
 namespace validators;
 
-use Exception;
-
 class BaseValidator
 {
     // 实例
@@ -102,69 +100,35 @@ class BaseValidator
     /**
      * 构造函数
      * @access public
-     * @param array $rules 验证规则
-     * @param array $message 验证提示信息
-     * @param array $field 验证字段描述信息
+     * @param $data
+     * @internal param array $rules 验证规则
+     * @internal param array $message 验证提示信息
+     * @internal param array $field 验证字段描述信息
      */
-    public function __construct(array $rules = [], $message = [], $field = [])
+    public function __construct($data)
     {
         //TODO: 构造函数只传入$data, 对验证器进行实例化
-        $this->rule = array_merge($this->rule, $rules);
-        $this->message = array_merge($this->message, $message);
-        $this->field = array_merge($this->field, $field);
+        $this->data = $data;
     }
 
 
     /**
      * 实例化验证
      * @access public
-     * @param array $rules 验证规则
-     * @param array $message 验证提示信息
-     * @param array $field 验证字段描述信息
+     * @param $data
      * @return Validate
+     * @internal param array $rules 验证规则
+     * @internal param array $message 验证提示信息
+     * @internal param array $field 验证字段描述信息
      */
-    public static function make($rules = [], $message = [], $field = [])
+    public static function make($data)
     {
         if (is_null(self::$instance)) {
-            self::$instance = new self($rules, $message, $field);
+            self::$instance = new self($data);
         }
         return self::$instance;
     }
 
-    /**
-     * 添加字段验证规则
-     * @access protected
-     * @param string|array $name 字段名称或者规则数组
-     * @param mixed $rule 验证规则
-     * @return Validate
-     */
-    public function rule($name, $rule = '')
-    {
-        //TODO: 未发现内部调用,且不会再使用时更改rule
-        if (is_array($name)) {
-            $this->rule = array_merge($this->rule, $name);
-        } else {
-            $this->rule[$name] = $rule;
-        }
-        return $this;
-    }
-
-    /**
-     * 注册验证（类型）规则
-     * @access public
-     * @param string $type 验证规则类型
-     * @param mixed $callback callback方法(或闭包)
-     * @return void
-     */
-    public static function extend($type, $callback = null)
-    {
-        //TODO: 同$this->rule()
-        if (is_array($type)) {
-            self::$type = array_merge(self::$type, $type);
-        } else {
-            self::$type[$type] = $callback;
-        }
-    }
 
     /**
      * 获取验证规则的默认提示信息
@@ -182,44 +146,19 @@ class BaseValidator
         }
     }
 
-    /**
-     * 设置提示信息
-     * @access public
-     * @param string|array $name 字段名称
-     * @param string $message 提示信息
-     * @return Validate
-     */
-    public function message($name, $message = '')
-    {
-        //TODO: 同$this->rule()
-        if (is_array($name)) {
-            $this->message = array_merge($this->message, $name);
-        } else {
-            $this->message[$name] = $message;
-        }
-        return $this;
-    }
 
     /**
      * 设置验证场景
      * @access public
      * @param string|array $name 场景名或者场景设置数组
-     * @param mixed $fields 要验证的字段
      * @return Validate
      */
-    public function scene($name, $fields = null)
+    public function scene($name)
     {
         //TODO: 只传入$name即可, 不需动态修改
         // 只是指定验证时使用的验证场景
         if (is_array($name)) {
             $this->scene = array_merge($this->scene, $name);
-        }
-        if (is_null($fields)) {
-            // 设置当前场景
-            $this->currentScene = $name;
-        } else {
-            // 设置验证场景
-            $this->scene[$name] = $fields;
         }
         return $this;
     }
@@ -239,14 +178,13 @@ class BaseValidator
     /**
      * 数据自动验证
      * @access public
-     * @param array $data 数据
      * @param mixed $rules 验证规则
      * @param string $scene 验证场景
      * @return bool
      */
-    public function validate($data, $rules = [], $scene = '')
+    public function validate($rules = [], $scene = '')
     {
-        $this->data = $data;
+
         $this->error = [];
 
         if (empty($rules)) {
@@ -307,14 +245,14 @@ class BaseValidator
             }
 
             // 获取数据 支持二维数组
-            $value = $this->getDataValue($data, $key);
+            $value = $this->getDataValue($this->data, $key);
 
             // 字段验证
             if ($rule instanceof \Closure) {
                 // 匿名函数验证 支持传入当前字段和所有字段两个数据
-                $result = call_user_func_array($rule, [$value, $data]);
+                $result = call_user_func_array($rule, [$value, $this->data]);
             } else {
-                $result = $this->checkItem($key, $value, $rule, $data, $title, $msg);
+                $result = $this->checkItem($key, $value, $rule, $this->data, $title, $msg);
             }
 
             if (true !== $result) {
@@ -781,19 +719,6 @@ class BaseValidator
         }
     }
 
-    /**
-     * 验证请求类型
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function method($value, $rule)
-    {
-        //TODO: delete
-        $method = Request::instance()->method();
-        return strtoupper($rule) == $method;
-    }
 
     /**
      * 验证时间和日期是否符合指定格式
@@ -808,71 +733,6 @@ class BaseValidator
         return 0 == $info['warning_count'] && 0 == $info['error_count'];
     }
 
-    /**
-     * 验证是否唯一
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则 格式：数据表,字段名,排除ID,主键名
-     * @param array $data 数据
-     * @param string $field 验证字段名
-     * @return bool
-     */
-    protected function unique($value, $rule, $data, $field)
-    {
-        //TODO: delete
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
-        }
-        if (false !== strpos($rule[0], '\\')) {
-            // 指定模型类
-            $db = new $rule[0];
-        } else {
-            try {
-                $db = Loader::model($rule[0]);
-            } catch (Exception $e) {
-                $db = Db::name($rule[0]);
-            }
-        }
-        $key = isset($rule[1]) ? $rule[1] : $field;
-
-        if (strpos($key, '^')) {
-            // 支持多个字段验证
-            $fields = explode('^', $key);
-            foreach ($fields as $key) {
-                $map[$key] = $data[$key];
-            }
-        } elseif (strpos($key, '=')) {
-            parse_str($key, $map);
-        } else {
-            $map[$key] = $data[$field];
-        }
-
-        $pk = strval(isset($rule[3]) ? $rule[3] : $db->getPk());
-        if (isset($rule[2])) {
-            $map[$pk] = ['neq', $rule[2]];
-        } elseif (isset($data[$pk])) {
-            $map[$pk] = ['neq', $data[$pk]];
-        }
-
-        if ($db->where($map)->field($pk)->find()) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 使用行为类验证
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则
-     * @param array $data 数据
-     * @return mixed
-     */
-    protected function behavior($value, $rule, $data)
-    {
-        //TODO: delete
-        return Hook::exec($rule, '', $data);
-    }
 
     /**
      * 使用filter_var方式验证
@@ -1093,55 +953,6 @@ class BaseValidator
         return strtotime($value) <= strtotime($rule);
     }
 
-    /**
-     * 验证有效期
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function expire($value, $rule)
-    {
-        //TODO: delete 请求相关验证可提取为middleware
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
-        }
-        list($start, $end) = $rule;
-        if (!is_numeric($start)) {
-            $start = strtotime($start);
-        }
-
-        if (!is_numeric($end)) {
-            $end = strtotime($end);
-        }
-        return $_SERVER['REQUEST_TIME'] >= $start && $_SERVER['REQUEST_TIME'] <= $end;
-    }
-
-    /**
-     * 验证IP许可
-     * @access protected
-     * @param string $value 字段值
-     * @param mixed $rule 验证规则
-     * @return mixed
-     */
-    protected function allowIp($value, $rule)
-    {
-        //TODO: delete 请求相关验证可提取为middleware
-        return in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
-    }
-
-    /**
-     * 验证IP禁用
-     * @access protected
-     * @param string $value 字段值
-     * @param mixed $rule 验证规则
-     * @return mixed
-     */
-    protected function denyIp($value, $rule)
-    {
-        //TODO: delete 请求相关验证可提取为middleware
-        return !in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
-    }
 
     /**
      * 使用正则验证数据
@@ -1162,33 +973,6 @@ class BaseValidator
         return 1 === preg_match($rule, (string)$value);
     }
 
-    /**
-     * 验证表单令牌
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则
-     * @param array $data 数据
-     * @return bool
-     */
-    protected function token($value, $rule, $data)
-    {
-        //TODO: delete 请求相关验证可提取为middleware
-        $rule = !empty($rule) ? $rule : '__token__';
-        if (!isset($data[$rule]) || !Session::has($rule)) {
-            // 令牌数据无效
-            return false;
-        }
-
-        // 令牌验证
-        if (isset($data[$rule]) && Session::get($rule) === $data[$rule]) {
-            // 防止重复提交
-            Session::delete($rule); // 验证完成销毁session
-            return true;
-        }
-        // 开启TOKEN重置
-        Session::delete($rule);
-        return false;
-    }
 
     // 获取错误信息
     public function getError()
