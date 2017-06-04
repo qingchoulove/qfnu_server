@@ -45,10 +45,21 @@ class HomeController extends BaseController
 
         $data = $request->getParsedBody();
         //验证提交的登录信息
+<<<<<<< HEAD
         $validator = new LoginValidator($data);
 
         if (!$validator->validate()) {
             throw new FieldNotValidException("请输入正确的参数", $validator->getErrors());
+=======
+        $validator = (new LoginValidator($data));
+
+        if (!$validator->validate()) {
+            $result = [
+                'status' => false,
+                'message' => $validator->getError()
+            ];
+            return $response->withJson($result);
+>>>>>>> 优化验证器
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);
