@@ -17,13 +17,28 @@ class LoginValidator extends BaseValidator
         'captcha' => 'withoutValidator'
     ];
 
-    protected function isPositiveInteger($value, $rule = '', $data = '', $field = '')
+    protected $message = [
+
+        'user_id.require' => '账号必须填写',
+        'user_id.isPositiveInteger' => '账号格式有误',
+        'user_id.length' => '账号长度不合法',
+        'password.require' => '密码必须填写',
+        'password.length' => '密码长度不合法',
+    ];
+
+    /**
+     * 必须是正整数(自带number)
+     * @param $value
+     * @return bool
+     */
+    protected function isPositiveInteger($value)
     {
         if (is_numeric($value) && is_int($value + 0) && ($value + 0) > 0) {
             return true;
         }
-        return $field . '不合法';
+        return false;
     }
+
 
     protected function withoutValidator()
     {
