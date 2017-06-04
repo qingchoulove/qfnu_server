@@ -42,9 +42,14 @@ class HomeController extends BaseController
 
         $data = $request->getParsedBody();
         //验证提交的登录信息
-        $validator = (new LoginValidator())->scene('login');
-        if (!$validator->validate($data)) {
-            return $response->withJson($validator->getError());
+        $validator = (new LoginValidator($data));
+
+        if (!$validator->validate()) {
+            $result = [
+                'status' => false,
+                'message' => $validator->getError()
+            ];
+            return $response->withJson($result);
         }
         $data = $validator->getAvailableAttribute();
         //测试是否验证成功  请打开注释
