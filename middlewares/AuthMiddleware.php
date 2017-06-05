@@ -3,13 +3,15 @@
 namespace middlewares;
 
 use common\Constants;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  * 鉴权中间件
  */
 class AuthMiddleware extends BaseMiddleware
 {
-    public function __invoke($request, $response, $next)
+    public function __invoke(Request $request, Response $response, $next)
     {
         $authorization = $request->getHeaderLine('Authorization');
         if (empty($authorization) ||
