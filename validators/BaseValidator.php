@@ -126,10 +126,8 @@ class BaseValidator
      */
     public function scene($name)
     {
-        //TODO: 只传入$name即可, 不需动态修改
-        // 只是指定验证时使用的验证场景
-        if (is_array($name)) {
-            $this->scene = array_merge($this->scene, $name);
+        if (!empty($name)) {
+            $this->currentScene = $name;
         }
         return $this;
     }
@@ -153,18 +151,14 @@ class BaseValidator
      * @param string $scene 验证场景
      * @return bool
      */
-    public function validate($rules = [], $scene = '')
+    public function validate()
     {
 
         $this->error = [];
-
-        if (empty($rules)) {
-            // 读取验证规则
-            $rules = $this->rule;
-        }
-
+        // 读取验证规则
+        $rules = $this->rule;
         // 分析验证规则
-        $scene = $this->getScene($scene);
+        $scene = $this->getScene();
         if (is_array($scene)) {
             // 处理场景验证字段
             $change = [];
@@ -847,15 +841,11 @@ class BaseValidator
     /**
      * 获取数据验证的场景
      * @access protected
-     * @param string $scene 验证场景
      * @return array
      */
-    protected function getScene($scene = '')
+    protected function getScene()
     {
-        if (empty($scene)) {
-            // 读取指定场景
-            $scene = $this->currentScene;
-        }
+        $scene = $this->currentScene;
 
         if (!empty($scene) && isset($this->scene[$scene])) {
             // 如果设置了验证适用场景
@@ -868,6 +858,5 @@ class BaseValidator
         }
         return $scene;
     }
-
-
 }
+
