@@ -2,9 +2,13 @@
 
 namespace common;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Exception;
+
 class ErrorHandler extends Component
 {
-    public function __invoke($request, $response, $exception)
+    public function __invoke(Request $request, Response $response, Exception $exception)
     {
         $logger = $this->get('logger');
         $displayErrorDetails = $this->get('settings')['displayErrorDetails'];
