@@ -1,6 +1,8 @@
 <?php
 
 namespace middlewares;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  * 日志中间件
@@ -9,13 +11,13 @@ namespace middlewares;
 class LoggerMiddleware extends BaseMiddleware
 {
 
-    public function __invoke($request, $response, $next)
+    public function __invoke(Request $request, Response $response, $next)
     {
         $method = $request->getMethod();
         $uri = $request->getUri();
         $headers = $request->getHeaders();
         $parsedBody = $request->getParsedBody();
-        $this->logger->info($method . ':' . $uri . "\r\nheader:" .json_encode($headers) . "\r\nbody:" . json_encode($parsedBody));
+        $this->logger->info($method . ':' . $uri . "\r\nbody:" . json_encode($parsedBody));
         $response = $next($request, $response);
         return $response;
     }

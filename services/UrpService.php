@@ -218,18 +218,49 @@ class UrpService extends BaseService
         $url = 'http://202.194.188.19/xkAction.do?actionType=6';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
-        preg_match_all('#<tr bgcolor=[^>]*?>[\s\S]*?</tr>#i', $content, $table);
-        $curriculum = [];
+        preg_match_all('#<tr.*?onMouseOut[^>]*?>[\s\S]*?</tr>#i', $content, $table);
+        $lessons = [];
         foreach ($table[0] as $key => $value) {
             $tr = reset(Util::ParseTable($value));
-            if ($key % 4 == 0) {
-                $tr = array_slice($tr, 2);
-            } else if ($key == 3 || $key == 7) {
-                $tr = array_slice($tr, 1, 7);
+            if (count($tr) == 18) {
+                $lesson = [
+                    'name' => $tr[2],
+                    'teacher' => str_replace('*', '', $tr[7]),
+                    'range' => str_replace('周上', '', $tr[11]),
+                    'week' => intval($tr[12]) - 1,
+                    'session' => intval($tr[13]) - 1,
+                    'num' => intval($tr[14]),
+                    'building' => $tr[16],
+                    'classroom' => $tr[17]
+
+                ];
             } else {
-                $tr = array_slice($tr, 1);
+                $lesson = array_slice($lessons, -1)[0];
+                $lesson['range'] = str_replace('周上', '', $tr[0]);
+                $lesson['week'] = intval($tr[1]) - 1;
+                $lesson['session'] = intval($tr[2]) - 1;
+                $lesson['num'] = intval($tr[3]);
+                $lesson['building'] = $tr[5];
+                $lesson['classroom'] = $tr[6];
             }
-            $curriculum[] = $tr;
+            $lessons[] = $lesson;
+        }
+        // 构造课表结构
+        $curriculum = array_fill(0, 7, []);
+        foreach ($curriculum as $key => $value) {
+            $curriculum[$key] = array_fill(0, 11, []);
+        }
+        //TODO: 增加周次判断,只输出当前周
+        foreach ($lessons as $key => $value) {
+            $num = $value['num'];
+            for ($i = 0; $i < $num; $i++) {
+                $lesson = &$curriculum[$value['week']][$value['session'] + $i];
+                if (empty($lesson)) {
+                    $lesson = $value;
+                } else {
+                    $lesson = [$lesson, $value];
+                }
+            }
         }
         return $curriculum;
     }

@@ -1,16 +1,13 @@
 <?php
 namespace controllers;
 
-use services\AccountService;
-use services\CasService;
 use services\UrpService;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
+ * 教务接口
  * Class UrpController
- * @property AccountService $accountService
- * @property CasService $casService
  * @property UrpService $urpService
  */
 class UrpController extends BaseController

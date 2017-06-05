@@ -3,7 +3,6 @@ namespace services;
 
 use common\Util;
 use common\Constants;
-use Illuminate\Database\Eloquent\Model;
 use models\AccountModel;
 use Exception;
 
@@ -64,7 +63,7 @@ class AccountService extends BaseService
 
     /**
      * 添加用户
-     * @param array 用户信息
+     * @param array $account
      */
     public function addAccount(array $account)
     {
@@ -81,7 +80,8 @@ class AccountService extends BaseService
 
     /**
      * 更新用户信息
-     * @param  array 用户信息
+     * @param array $account
+     * @throws Exception
      */
     public function updateAccount(array $account)
     {
@@ -101,9 +101,9 @@ class AccountService extends BaseService
 
     /**
      * 更新用户token
-     * @param string $accountId
+     * @param string $userId
      * @param string $token
-     * @return void
+     * @throws Exception
      */
     public function updateAccountToken(string $userId, string $token)
     {

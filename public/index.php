@@ -30,7 +30,7 @@ $container = $app->getContainer();
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->getContainer()->singleton(
     \Illuminate\Contracts\Debug\ExceptionHandler::class,
-    common\DatabaseExceptionHandler::class
+    \common\DataBaseErrorHandler::class
 );
 $capsule->addConnection($container['settings']['db']);
 $capsule->setAsGlobal();
