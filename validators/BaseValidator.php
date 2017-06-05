@@ -15,9 +15,6 @@ class BaseValidator
     // 自定义的验证类型
     protected static $type = [];
 
-    //过滤字段
-    protected $filter = [];
-
     // 验证类型别名
     protected $alias = [
         '>' => 'gt', '>=' => 'egt', '<' => 'lt', '<=' => 'elt', '=' => 'eq', 'same' => 'eq',
@@ -28,6 +25,7 @@ class BaseValidator
 
     // 验证提示信息
     protected $message = [];
+
     // 验证字段描述
     protected $field = [];
 
@@ -273,7 +271,7 @@ class BaseValidator
     {
         $arrays = $this->data;
         $newArray = [];
-        foreach ($this->filter as $key) {
+        foreach ($this->field as $key) {
             if (isset($arrays[$key])) {
                 $newArray[$key] = $arrays[$key];
             } else {
@@ -512,7 +510,7 @@ class BaseValidator
                 $result = $this->filter($value, FILTER_VALIDATE_FLOAT);
                 break;
             case 'number':
-                $result = is_numeric($value);
+                $result = is_int($value);
                 break;
             case 'integer':
                 // 是否为整型
@@ -543,18 +541,6 @@ class BaseValidator
     }
 
 
-    /**
-     * 必须是正整数
-     * @param $value
-     * @return bool
-     */
-    protected function PositiveInteger($value)
-    {
-        if (is_numeric($value) && is_int($value + 0) && ($value + 0) > 0) {
-            return true;
-        }
-        return false;
-    }
 
 
     /**
