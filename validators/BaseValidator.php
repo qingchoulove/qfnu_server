@@ -510,7 +510,7 @@ class BaseValidator
                 $result = $this->filter($value, FILTER_VALIDATE_FLOAT);
                 break;
             case 'number':
-                $result = is_int($value);
+                $result = is_int($value + 0);
                 break;
             case 'integer':
                 // 是否为整型
@@ -539,8 +539,6 @@ class BaseValidator
         }
         return $result;
     }
-
-
 
 
     /**
