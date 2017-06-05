@@ -7,6 +7,7 @@ namespace common;
 */
 class Constants
 {
+    const START_DATE = '2017-02-20';
     const CAS_COOKIE_PREFIX = 'cas_cookie_';
     const AUTH_PREFIX = 'TOKEN:';
     const AUTHSERVER_TYPE_HOME = 0;

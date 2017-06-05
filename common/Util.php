@@ -85,7 +85,11 @@ class Util
         return strtr(substr(base64_encode($bytes), 0, $length), '+/', '_-');
     }
 
-    public static function SchoolYear()
+    /**
+     * 生成标准学年字符串
+     * @return string
+     */
+    public static function SchoolYear():string
     {
         $month = date("m");
         if ($month < 8) {
@@ -94,6 +98,16 @@ class Util
             $year = date('Y') . '-' . date('Y', strtotime('+1 year')) . '-1-1';
         }
         return $year;
+    }
+
+    /**
+     * 获取教学周
+     * @return int
+     */
+    public static function WeekNumber():int
+    {
+        $time = strtotime(Constants::START_DATE);
+        return (time() - $time) / (60 * 60 * 24 * 7) + 1;
     }
 
     /**
@@ -116,6 +130,7 @@ class Util
         $table = str_replace(" ", "", $table);
         $table = explode('{tr}', $table);
         array_pop($table);
+        $tdArr = [];
         foreach ($table as $key => $tr) {
             $td = explode('{td}', $tr);
             array_pop($td);
