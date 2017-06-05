@@ -102,24 +102,6 @@ class BaseValidator
 
 
     /**
-     * 实例化验证
-     * @access public
-     * @param $data
-     * @return Validate
-     * @internal param array $rules 验证规则
-     * @internal param array $message 验证提示信息
-     * @internal param array $field 验证字段描述信息
-     */
-    public static function make($data)
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self($data);
-        }
-        return self::$instance;
-    }
-
-
-    /**
      * 获取验证规则的默认提示信息
      * @access protected
      * @param string|array $type 验证规则类型名称或者数组
@@ -221,7 +203,7 @@ class BaseValidator
 
             // 场景检测
             if (!empty($scene)) {
-                if ($scene instanceof \Closure && !call_user_func_array($scene, [$key, $data])) {
+                if ($scene instanceof \Closure && !call_user_func_array($scene, [$key, $this->data])) {
                     continue;
                 } elseif (is_array($scene)) {
                     if (!in_array($key, $array)) {
@@ -342,7 +324,7 @@ class BaseValidator
                 if (isset($msg[$i])) {
                     $message = $msg[$i];
                     if (is_string($message) && strpos($message, '{%') === 0) {
-                        $message = Lang::get(substr($message, 2, -1));
+                        $message = substr($message, 2, -1);
                     }
                 } else {
                     $message = $this->getRuleMsg($field, $title, $info, $rule);
@@ -844,8 +826,7 @@ class BaseValidator
         }
 
         if (is_string($msg) && 0 === strpos($msg, '{%')) {
-            //TODO: 需修改
-            $msg = Lang::get(substr($msg, 2, -1));
+            $msg = substr($msg, 2, -1);
         }
 
         if (is_string($msg) && is_scalar($rule) && false !== strpos($msg, ':')) {
@@ -888,13 +869,5 @@ class BaseValidator
         return $scene;
     }
 
-    public static function __callStatic($method, $params)
-    {
-        $class = self::make();
-        if (method_exists($class, $method)) {
-            return call_user_func_array([$class, $method], $params);
-        } else {
-            throw new \BadMethodCallException('method not exists:' . __CLASS__ . '->' . $method);
-        }
-    }
+
 }
