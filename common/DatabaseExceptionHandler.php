@@ -2,7 +2,9 @@
 namespace common;
 use Exception;
 
-class DatabaseExceptionHandler implements \Illuminate\Contracts\Debug\ExceptionHandler
+//待开发
+
+class DatabaseExceptionHandler implements \Illuminate\Contracts\ExceptionHandler
 {
     public function report(Exception $e)
     {

@@ -1,8 +1,10 @@
 <?php
 return [
     'settings' => [
-        'displayErrorDetails' => true, // set to false in production
-        'addContentLengthHeader' => true, // Allow the web server to send the content-length header
+        // set to false in production
+        'displayErrorDetails' => false,
+        // Allow the web server to send the content-length header
+        'addContentLengthHeader' => true,
 
         // Monolog settings
         'logger' => [
@@ -12,13 +14,13 @@ return [
         ],
         // Wechat settings
         'wechat' => [
-            'debug'  => true,
+            'debug' => true,
             'app_id' => 'wx4d7bb7798f32eead',//wx84a9581b9181bc8e//wx4d7bb7798f32eead
             'secret' => 'bd0e8e50a77117ff28b25e0351e6cb5f',//cbc791a2e11e1fd6953a2a5e813f8e86//bd0e8e50a77117ff28b25e0351e6cb5f
-            'token'  => 'easywechat',
+            'token' => 'easywechat',
             'log' => [
-              'level' => 'debug',
-              'file'  => __DIR__. '/../logs/easywechat.log',
+                'level' => 'debug',
+                'file' => __DIR__ . '/../logs/easywechat.log',
             ]
         ],
         // Db
@@ -28,14 +30,14 @@ return [
             'database' => 'zsqy',
             'username' => 'root',
             'password' => '123456',
-            'charset'   => 'utf8',
+            'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
-            'prefix'    => '',
+            'prefix' => '',
         ],
         'redis' => [
-            'scheme'   => 'tcp',
-            'host'     => '127.0.0.1',
-            'port'     => 6379,
+            'scheme' => 'tcp',
+            'host' => '127.0.0.1',
+            'port' => 6379,
             'database' => 0
         ]
     ],

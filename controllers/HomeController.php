@@ -1,11 +1,12 @@
 <?php
 namespace controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use common\ParameterException;
+use common\Util;
 use services\AccountService;
 use services\CasService;
-use common\Util;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use validators\LoginValidator;
 
 /**
@@ -35,6 +36,7 @@ class HomeController extends BaseController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws \Exception
      */
     public function login(Request $request, Response $response)
     {
@@ -45,11 +47,14 @@ class HomeController extends BaseController
         $validator = (new LoginValidator($data));
 
         if (!$validator->validate()) {
-            $result = [
-                'status' => false,
-                'message' => $validator->getError()
-            ];
-            return $response->withJson($result);
+            //方式一：throw new ParameterException();
+            //方式二：
+            throw new ParameterException(
+                [
+                    'msg' => 'Text',
+                    'errorCode' => 666,
+                ]
+            );
         }
         $data = $validator->getAvailableAttribute();
         //测试是否验证成功  请打开注释
