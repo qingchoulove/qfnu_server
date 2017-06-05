@@ -250,16 +250,26 @@ class UrpService extends BaseService
         foreach ($curriculum as $key => $value) {
             $curriculum[$key] = array_fill(0, 11, []);
         }
-        //TODO: 增加周次判断,只输出当前周
+        $nowWeek = Util::WeekNumber();
+        if ($nowWeek > 18) {
+            return $curriculum;
+        }
         foreach ($lessons as $key => $value) {
+            if ($value['range'] == '单周' && $nowWeek % 2 == 0) {
+                continue;
+            }
+            if ($value['range'] == '双周' && $nowWeek % 2 == 1) {
+                continue;
+            }
+            if (!in_array($value['range'], ['单周', '双周', '1-18']) && $value['range'] != $nowWeek) {
+                continue;
+            }
             $num = $value['num'];
+            $week = $value['week'];
+            $session = $value['session'];
+            array_splice($value, 2, 4);
             for ($i = 0; $i < $num; $i++) {
-                $lesson = &$curriculum[$value['week']][$value['session'] + $i];
-                if (empty($lesson)) {
-                    $lesson = $value;
-                } else {
-                    $lesson = [$lesson, $value];
-                }
+                $curriculum[$week][$session + $i] = $value;
             }
         }
         return $curriculum;
