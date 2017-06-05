@@ -24,17 +24,17 @@ return [
         // Db
         'db' => [
             'driver' => 'mysql',
-            'host' => 'mysql',
+            'host' => '127.0.0.1',
             'database' => 'zsqy',
             'username' => 'root',
-            'password' => '',
+            'password' => '123456',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
         ],
         'redis' => [
             'scheme'   => 'tcp',
-            'host'     => 'redis',
+            'host'     => '127.0.0.1',
             'port'     => 6379,
             'database' => 0
         ]

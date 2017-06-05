@@ -13,7 +13,7 @@ class Util
     /**
      * 生成UUID
      */
-    public static function UUID():string
+    public static function UUID()
     {
         return md5(uniqid());
     }
@@ -24,7 +24,7 @@ class Util
      * @param string|null
      * @param array|null
      */
-    public static function Curl(string $url, string $cookie = null, array $data = null):string
+    public static function Curl($url, $cookie = null, array $data = null)
     {
         $ch = curl_init();
         //设置选项，包括URL
@@ -56,7 +56,7 @@ class Util
      * @param string|null
      * @param string
      */
-    public static function GetFile(string $url, string $cookie = null)
+    public static function GetFile($url,$cookie = null)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -76,7 +76,7 @@ class Util
      * 生成指定长度随机Key
      * @param integer $length [description]
      */
-    public static function RandomKey(int $length = 32):string
+    public static function RandomKey( $length = 32)
     {
         if ($length > 32 || $length < 8) {
             $length = 32;
@@ -85,7 +85,7 @@ class Util
         return strtr(substr(base64_encode($bytes), 0, $length), '+/', '_-');
     }
 
-    public static function SchoolYear():string
+    public static function SchoolYear()
     {
         $month = date("m");
         if ($month < 8) {
@@ -101,7 +101,7 @@ class Util
      * @param  string
      * @return array
      */
-    public static function ParseTable(string $html):array
+    public static function ParseTable($html)
     {
         $table = preg_replace("'<tr[^>]*?>'si", "", $html);
         $table = preg_replace("'<td[^>]*?>'si", "", $table);

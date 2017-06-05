@@ -6,6 +6,7 @@ use Slim\Http\Response;
 use services\AccountService;
 use services\CasService;
 use common\Util;
+use validators\LoginValidator;
 
 /**
  * 首页控制器
@@ -20,7 +21,7 @@ class HomeController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function index(Request $request, Response $response):Response
+    public function index(Request $request, Response $response)
     {
         $result = [
             'status' => true,
@@ -35,10 +36,22 @@ class HomeController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function login(Request $request, Response $response):Response
+    public function login(Request $request, Response $response)
     {
+
+
         $data = $request->getParsedBody();
-        //TODO: validate
+        //验证提交的登录信息
+        $validator = (new LoginValidator($data));
+
+        if (!$validator->validate()) {
+            $result = [
+                'status' => false,
+                'message' => $validator->getError()
+            ];
+            return $response->withJson($result);
+        }
+        $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);
         $result = [
             'status' => false,
@@ -63,7 +76,7 @@ class HomeController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function captcha(Request $request, Response $response):Response
+    public function captcha(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         $result['is_need'] = $this->casService->needCaptcha($data['user_id']);
