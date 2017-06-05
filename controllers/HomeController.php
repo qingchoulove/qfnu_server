@@ -57,10 +57,6 @@ class HomeController extends BaseController
             );
         }
         $data = $validator->getAvailableAttribute();
-        //测试是否验证成功  请打开注释
-        return $response->withJson($data);
-
-
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);
         $result = [
             'status' => false,

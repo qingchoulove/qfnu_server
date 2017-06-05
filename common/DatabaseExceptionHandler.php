@@ -1,10 +1,15 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: SoftpaseFar
+ * Date: 2017/6/6
+ * Time: 7:23
+ */
+
 namespace common;
 use Exception;
 
-//待开发
-
-class DatabaseExceptionHandler implements \Illuminate\Contracts\ExceptionHandler
+class DatabaseExceptionHandler extends ErrorHandler
 {
     public function report(Exception $e)
     {
@@ -20,4 +25,5 @@ class DatabaseExceptionHandler implements \Illuminate\Contracts\ExceptionHandler
     {
         throw $e;
     }
+
 }

@@ -1,10 +1,16 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: SoftpaseFar
+ * Date: 2017/6/6
+ * Time: 7:24
+ */
 
 namespace common;
 
+
 class ErrorHandler extends Component
 {
-
     private $code;
     private $msg;
     private $errorCode;
@@ -47,7 +53,7 @@ class ErrorHandler extends Component
         $result = [
             'msg' => $this->msg,
             'error_code' => $this->errorCode,
-            'request_url' => $request->getBaseUrl().$request->getPath()
+            'request_url' => $request->getBaseUrl() . $request->getPath()
         ];
         return $response
             ->withStatus($this->code)
