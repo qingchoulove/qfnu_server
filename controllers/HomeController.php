@@ -29,6 +29,7 @@ class HomeController extends BaseController
             'status' => true,
             'message' => '掌上曲园服务'
         ];
+        $result = $this->urpService->getCurriculum('2015413942');
         return $response->withJson($result);
     }
 
