@@ -15,6 +15,9 @@ class BaseValidator
     // 自定义的验证类型
     protected static $type = [];
 
+    //过滤字段
+    protected $filter = [];
+
     // 验证类型别名
     protected $alias = [
         '>' => 'gt', '>=' => 'egt', '<' => 'lt', '<=' => 'elt', '=' => 'eq', 'same' => 'eq',
@@ -41,18 +44,13 @@ class BaseValidator
         'array' => ':attribute必须是数组',
         'accepted' => ':attribute必须是yes、on或者1',
         'date' => ':attribute格式不符合',
-        'file' => ':attribute不是有效的上传文件',
-        'image' => ':attribute不是有效的图像文件',
         'alpha' => ':attribute只能是字母',
         'alphaNum' => ':attribute只能是字母和数字',
         'alphaDash' => ':attribute只能是字母、数字和下划线_及破折号-',
-        'activeUrl' => ':attribute不是有效的域名或者IP',
         'chs' => ':attribute只能是汉字',
         'chsAlpha' => ':attribute只能是汉字、字母',
         'chsAlphaNum' => ':attribute只能是汉字、字母和数字',
         'chsDash' => ':attribute只能是汉字、字母、数字和下划线_及破折号-',
-        'url' => ':attribute不是有效的URL地址',
-        'ip' => ':attribute不是有效的IP地址',
         'dateFormat' => ':attribute必须使用日期格式 :rule',
         'in' => ':attribute必须在 :rule 范围内',
         'notIn' => ':attribute不能在 :rule 范围内',
@@ -64,8 +62,6 @@ class BaseValidator
         'after' => ':attribute日期不能小于 :rule',
         'before' => ':attribute日期不能超过 :rule',
         'expire' => '不在有效期内 :rule',
-        'allowIp' => '不允许的IP访问',
-        'denyIp' => '禁止的IP访问',
         'confirm' => ':attribute和确认字段:2不一致',
         'different' => ':attribute和比较字段:2不能相同',
         'egt' => ':attribute必须大于等于 :rule',
@@ -76,10 +72,6 @@ class BaseValidator
         'unique' => ':attribute已存在',
         'regex' => ':attribute不符合指定规则',
         'method' => '无效的请求类型',
-        'token' => '令牌数据无效',
-        'fileSize' => '上传文件大小不符',
-        'fileExt' => '上传文件后缀不符',
-        'fileMime' => '上传文件类型不符',
     ];
 
     // 当前验证场景
@@ -107,7 +99,6 @@ class BaseValidator
      */
     public function __construct($data)
     {
-        //TODO: 构造函数只传入$data, 对验证器进行实例化
         $this->data = $data;
     }
 
@@ -282,8 +273,12 @@ class BaseValidator
     {
         $arrays = $this->data;
         $newArray = [];
-        foreach ($this->rule as $key => $value) {
-            $newArray[$key] = isset($arrays[$key]) ? $arrays[$key] : null;
+        foreach ($this->filter as $key) {
+            if (isset($arrays[$key])) {
+                $newArray[$key] = $arrays[$key];
+            } else {
+                unset($newArray[$key]);
+            }
         }
         return $newArray;
     }
@@ -512,18 +507,6 @@ class BaseValidator
                 // 只允许汉字、字母、数字和下划线_及破折号-
                 $result = $this->regex($value, '/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\_\-]+$/u');
                 break;
-            case 'activeUrl':
-                // 是否为有效的网址
-                $result = checkdnsrr($value);
-                break;
-            case 'ip':
-                // 是否为IP地址
-                $result = $this->filter($value, [FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6]);
-                break;
-            case 'url':
-                // 是否为一个URL地址
-                $result = $this->filter($value, FILTER_VALIDATE_URL);
-                break;
             case 'float':
                 // 是否为float
                 $result = $this->filter($value, FILTER_VALIDATE_FLOAT);
@@ -547,15 +530,6 @@ class BaseValidator
                 // 是否为数组
                 $result = is_array($value);
                 break;
-            case 'file':
-                $result = $value instanceof File;
-                break;
-            case 'image':
-                $result = $value instanceof File && in_array($this->getImageType($value->getRealPath()), [1, 2, 3, 6]);
-                break;
-            case 'token':
-                $result = $this->token($value, '__token__', $data);
-                break;
             default:
                 if (isset(self::$type[$rule])) {
                     // 注册的验证规则
@@ -568,155 +542,18 @@ class BaseValidator
         return $result;
     }
 
-    // 判断图像类型
-    protected function getImageType($image)
-    {
-        if (function_exists('exif_imagetype')) {
-            return exif_imagetype($image);
-        } else {
-            $info = getimagesize($image);
-            return $info[2];
-        }
-    }
 
     /**
-     * 验证是否为合格的域名或者IP 支持A，MX，NS，SOA，PTR，CNAME，AAAA，A6， SRV，NAPTR，TXT 或者 ANY类型
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则
+     * 必须是正整数
+     * @param $value
      * @return bool
      */
-    protected function activeUrl($value, $rule)
+    protected function PositiveInteger($value)
     {
-        if (!in_array($rule, ['A', 'MX', 'NS', 'SOA', 'PTR', 'CNAME', 'AAAA', 'A6', 'SRV', 'NAPTR', 'TXT', 'ANY'])) {
-            $rule = 'MX';
-        }
-        return checkdnsrr($value, $rule);
-    }
-
-    /**
-     * 验证是否有效IP
-     * @access protected
-     * @param mixed $value 字段值
-     * @param mixed $rule 验证规则 ipv4 ipv6
-     * @return bool
-     */
-    protected function ip($value, $rule)
-    {
-        if (!in_array($rule, ['ipv4', 'ipv6'])) {
-            $rule = 'ipv4';
-        }
-        return $this->filter($value, [FILTER_VALIDATE_IP, 'ipv6' == $rule ? FILTER_FLAG_IPV6 : FILTER_FLAG_IPV4]);
-    }
-
-    /**
-     * 验证上传文件后缀
-     * @access protected
-     * @param mixed $file 上传文件
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function fileExt($file, $rule)
-    {
-        if (!($file instanceof File)) {
-            return false;
-        }
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
-        }
-        if (is_array($file)) {
-            foreach ($file as $item) {
-                if (!$item->checkExt($rule)) {
-                    return false;
-                }
-            }
+        if (is_numeric($value) && is_int($value + 0) && ($value + 0) > 0) {
             return true;
-        } else {
-            return $file->checkExt($rule);
         }
-    }
-
-    /**
-     * 验证上传文件类型
-     * @access protected
-     * @param mixed $file 上传文件
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function fileMime($file, $rule)
-    {
-        if (!($file instanceof File)) {
-            return false;
-        }
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
-        }
-        if (is_array($file)) {
-            foreach ($file as $item) {
-                if (!$item->checkMime($rule)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return $file->checkMime($rule);
-        }
-    }
-
-    /**
-     * 验证上传文件大小
-     * @access protected
-     * @param mixed $file 上传文件
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function fileSize($file, $rule)
-    {
-        if (!($file instanceof File)) {
-            return false;
-        }
-        if (is_array($file)) {
-            foreach ($file as $item) {
-                if (!$item->checkSize($rule)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return $file->checkSize($rule);
-        }
-    }
-
-    /**
-     * 验证图片的宽高及类型
-     * @access protected
-     * @param mixed $file 上传文件
-     * @param mixed $rule 验证规则
-     * @return bool
-     */
-    protected function image($file, $rule)
-    {
-        if (!($file instanceof File)) {
-            return false;
-        }
-        if ($rule) {
-            $rule = explode(',', $rule);
-            list($width, $height, $type) = getimagesize($file->getRealPath());
-            if (isset($rule[2])) {
-                $imageType = strtolower($rule[2]);
-                if ('jpeg' == $imageType) {
-                    $imageType = 'jpg';
-                }
-                if (image_type_to_extension($type, false) != $imageType) {
-                    return false;
-                }
-            }
-
-            list($w, $h) = $rule;
-            return $w == $width && $h == $height;
-        } else {
-            return in_array($this->getImageType($file->getRealPath()), [1, 2, 3, 6]);
-        }
+        return false;
     }
 
 
