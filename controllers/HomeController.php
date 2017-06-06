@@ -8,6 +8,7 @@ use services\CasService;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use validators\LoginValidator;
+use Exception;
 
 /**
  * 首页控制器
@@ -47,14 +48,19 @@ class HomeController extends BaseController
         $validator = (new LoginValidator($data));
 
         if (!$validator->validate()) {
-            //方式一：throw new ParameterException();
+            //打开挨个测试
+
+            //throw new Exception();
+            //throw new \Exception();
+            //方式一：
+            throw new ParameterException();
             //方式二：
-            throw new ParameterException(
-                [
-                    'msg' => 'Text',
-                    'errorCode' => 666,
-                ]
-            );
+//            throw new ParameterException(
+//                [
+//                    'message' => 'Text',
+//                    'code' => 666,
+//                ]
+//            );
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);

@@ -11,7 +11,7 @@ namespace common;
 
 class ParameterException extends BaseException
 {
-    public $code = 400;
-    public $msg = '参数错误';
-    public $errorCode = 10000;
+    public $httpCode = 500;
+    public $message = '参数错误';
+    public $code = 10002;
 }
