@@ -23,7 +23,7 @@ class HomeController extends BaseController
      * @param Response $response
      * @return Response
      */
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response):Response
     {
         $result = [
             'status' => true,
@@ -39,7 +39,7 @@ class HomeController extends BaseController
      * @return Response
      * @throws FieldNotValidException
      */
-    public function login(Request $request, Response $response)
+    public function login(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
         //验证提交的登录信息
@@ -73,7 +73,7 @@ class HomeController extends BaseController
      * @return Response
      * @throws ParamNotValidException
      */
-    public function captcha(Request $request, Response $response)
+    public function captcha(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
         if (empty($data['user_id'])) {

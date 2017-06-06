@@ -21,7 +21,7 @@ class UrpService extends BaseService
      * @return string
      * @throws Exception
      */
-    private function getCookie( $userId)
+    private function getCookie(string $userId):string
     {
         $password = $this->accountService->getPasswordByUserId($userId);
         $result = $this->casService->login($userId, $password, Constants::AUTHSERVER_TYPE_URP);
@@ -36,7 +36,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getUserInfo($userId)
+    public function getUserInfo(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xjInfoAction.do?oper=xjxx';
@@ -65,7 +65,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getAllGrade($userId)
+    public function getAllGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=qbinfo';
@@ -97,7 +97,7 @@ class UrpService extends BaseService
      * @return array
      * @throws Exception
      */
-    public function getCurrentGrade($userId)
+    public function getCurrentGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/bxqcjcxAction.do';
@@ -126,7 +126,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getFailingGrade($userId)
+    public function getFailingGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=bjg';
@@ -154,7 +154,7 @@ class UrpService extends BaseService
      * @return array
      * @throws Exception
      */
-    public function getFreeRoom($userId,$campus,  $building,  $week,$time,  $session)
+    public function getFreeRoom(string $userId, int $campus, int $building, int $week, int $time, int $session):array
     {
         $schoolYear = Util::SchoolYear();
         $paramKey = 'free_' . implode("_", [$schoolYear, $campus, $building, $week, $time, $session]);
@@ -201,7 +201,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getEvaluationList($userId)
+    public function getEvaluationList(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/jxpgXsAction.do';
@@ -219,7 +219,7 @@ class UrpService extends BaseService
      * @param  string
      * @return array
      */
-    public function getCurriculum($userId)
+    public function getCurriculum(string $userId):array
     {
         $cookie = $this->getCookie($userId);
         $url = 'http://202.194.188.19/xkAction.do?actionType=6';
