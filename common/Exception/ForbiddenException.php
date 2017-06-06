@@ -6,7 +6,7 @@
  * Time: 6:49
  */
 
-namespace common;
+namespace common\exception;
 
 
 class ForbiddenException extends BaseException

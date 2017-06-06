@@ -1,7 +1,8 @@
 <?php
 namespace controllers;
 
-use common\ParameterException;
+
+use common\exception\ParameterException;
 use common\Util;
 use services\AccountService;
 use services\CasService;
@@ -37,7 +38,8 @@ class HomeController extends BaseController
      * @param Request $request
      * @param Response $response
      * @return Response
-     * @throws \Exception
+     * @throws Exception
+     * @throws ParameterException
      */
     public function login(Request $request, Response $response)
     {
@@ -53,14 +55,14 @@ class HomeController extends BaseController
             //throw new Exception();
             //throw new \Exception();
             //方式一：
-            throw new ParameterException();
+            //throw new ParameterException();
             //方式二：
-//            throw new ParameterException(
-//                [
-//                    'message' => 'Text',
-//                    'code' => 666,
-//                ]
-//            );
+            throw new ParameterException(
+                [
+                    'message' => 'text for exception',
+                    'code' => 666,
+                ]
+            );
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);

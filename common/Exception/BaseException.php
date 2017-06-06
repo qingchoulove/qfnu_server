@@ -6,7 +6,7 @@
  * Time: 3:59
  */
 
-namespace common;
+namespace common\exception;
 
 use Exception;
 

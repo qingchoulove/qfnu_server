@@ -6,7 +6,7 @@
  * Time: 6:50
  */
 
-namespace common;
+namespace common\exception;
 
 
 class ParameterException extends BaseException

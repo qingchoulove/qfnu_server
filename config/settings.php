@@ -2,7 +2,7 @@
 return [
     'settings' => [
         // set to false in production
-        'displayErrorDetails' => false,
+        'displayErrorDetails' => true,
         // Allow the web server to send the content-length header
         'addContentLengthHeader' => true,
 

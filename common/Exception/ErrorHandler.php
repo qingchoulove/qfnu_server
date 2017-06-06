@@ -6,15 +6,17 @@
  * Time: 7:24
  */
 
-namespace common;
+namespace common\exception;
 
+
+use common\Component;
 
 class ErrorHandler extends Component
 {
     private $httpCode;
     private $message;
     private $code;
-    
+
     public function __invoke($request, $response, \Exception $exception)
     {
 

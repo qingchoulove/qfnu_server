@@ -5,10 +5,10 @@ $container = $app->getContainer();
 
 // error handler
 $container['errorHandler'] = function () {
-    return new common\ErrorHandler;
+    return new common\exception\ErrorHandler;
 };
 $container['phpErrorHandler'] = function () {
-    return new common\ErrorHandler;
+    return new common\exception\ErrorHandler;
 };
 
 // view renderer
