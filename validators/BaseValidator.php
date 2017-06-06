@@ -247,7 +247,7 @@ class BaseValidator
     {
         $arrays = $this->data;
         $newArray = [];
-        foreach ($this->field as $key) {
+        foreach (array_keys($this->field) as $key) {
             if (isset($arrays[$key])) {
                 $newArray[$key] = $arrays[$key];
             } else {
