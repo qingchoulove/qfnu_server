@@ -8,7 +8,7 @@ use Exception;
 
 class ErrorHandler extends Component
 {
-    public function __invoke(Request $request, Response $response, Exception $exception)
+    public function __invoke(Request $request, Response $response, $exception)
     {
         $logger = $this->get('logger');
         $displayErrorDetails = $this->get('settings')['displayErrorDetails'];

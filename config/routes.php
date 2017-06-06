@@ -17,4 +17,5 @@ $app->group('/urp', function() {
     $this->post('/grade/current', UrpController::class . ':getCurrentGrade');
     $this->post('/grade/fail', UrpController::class . ':getFailGrade');
     $this->post('/curriculum', UrpController::class . ':getCurriculum');
+    $this->post('/free-room', UrpController::class . ':getFreeRoom');
 })->add(new middlewares\AuthMiddleware);
