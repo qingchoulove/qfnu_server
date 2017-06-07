@@ -1,7 +1,6 @@
 <?php
 namespace controllers;
 
-use common\Util;
 use services\UrpService;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -21,8 +20,8 @@ class UrpController extends BaseController
      */
     public function getGrade(Request $request, Response $response):Response
     {
-        $data = $request->getParsedBody();
-        $grades = $this->urpService->getAllGrade($data['user_id']);
+        $userInfo = $this->get('session');
+        $grades = $this->urpService->getAllGrade($userInfo['user_id']);
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
@@ -38,8 +37,8 @@ class UrpController extends BaseController
      */
     public function getCurrentGrade(Request $request, Response $response):Response
     {
-        $data = $request->getParsedBody();
-        $grades = $this->urpService->getCurrentGrade($data['user_id']);
+        $userInfo = $this->get('session');
+        $grades = $this->urpService->getCurrentGrade($userInfo['user_id']);
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
@@ -55,8 +54,8 @@ class UrpController extends BaseController
      */
     public function getFailGrade(Request $request, Response $response):Response
     {
-        $data = $request->getParsedBody();
-        $grades = $this->urpService->getFailingGrade($data['user_id']);
+        $userInfo = $this->get('session');
+        $grades = $this->urpService->getFailingGrade($userInfo['user_id']);
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
@@ -72,8 +71,8 @@ class UrpController extends BaseController
      */
     public function getCurriculum(Request $request, Response $response):Response
     {
-        $data = $request->getParsedBody();
-        $curriculum = $this->urpService->getCurriculum($data['user_id']);
+        $userInfo = $this->get('session');
+        $curriculum = $this->urpService->getCurriculum($userInfo['user_id']);
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
@@ -90,8 +89,8 @@ class UrpController extends BaseController
     public function getFreeRoom(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
-
-        $rooms = $this->urpService->getFreeRoom($data['user_id'], $data['campus'],
+        $userInfo = $this->get('session');
+        $rooms = $this->urpService->getFreeRoom($userInfo['user_id'], $data['campus'],
             $data['building'], $data['week'], $data['time'], $data['session']);
 
         return $response->withJson([
