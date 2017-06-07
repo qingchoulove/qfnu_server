@@ -2,6 +2,9 @@
 
 use controllers\HomeController;
 use controllers\UrpController;
+use controllers\LibraryController;
+
+$authMiddleware = new middlewares\AuthMiddleware();
 
 // 测试路由
 $app->any('/', HomeController::class . ':index');
@@ -13,9 +16,14 @@ $app->group('/login', function() {
 });
 // 教务服务路由
 $app->group('/urp', function() {
-    $this->post('/grade', UrpController::class . ':getGrade');
-    $this->post('/grade/current', UrpController::class . ':getCurrentGrade');
-    $this->post('/grade/fail', UrpController::class . ':getFailGrade');
-    $this->post('/curriculum', UrpController::class . ':getCurriculum');
+    $this->get('/grade', UrpController::class . ':getGrade');
+    $this->get('/grade/current', UrpController::class . ':getCurrentGrade');
+    $this->get('/grade/fail', UrpController::class . ':getFailGrade');
+    $this->get('/curriculum', UrpController::class . ':getCurriculum');
     $this->post('/free-room', UrpController::class . ':getFreeRoom');
-})->add(new middlewares\AuthMiddleware);
+})->add($authMiddleware);
+// 图书馆服务路由
+$app->group('/lib', function() {
+    $this->get('/borrow', LibraryController::class . ':getBorrowBooks');
+    $this->post('/search', LibraryController::class . ':searchBook');
+})->add($authMiddleware);
