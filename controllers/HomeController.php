@@ -60,7 +60,9 @@ class HomeController extends BaseController
             throw new ParameterException(
                 [
                     'message' => 'text for exception',
-                    'code' => 666,
+                    'detail' => [
+                        $validator->getError()
+                    ]
                 ]
             );
         }

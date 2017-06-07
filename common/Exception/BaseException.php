@@ -25,16 +25,13 @@ class BaseException extends Exception
     {
         if (!is_array($parmas)) {
             return;
-            //或者抛出异常__construct
-        }
-        if (array_key_exists('httpCode', $parmas)) {
-            $this->httpCode = $parmas['httpCode'];
         }
         if (array_key_exists('message', $parmas)) {
             $this->message = $parmas['message'];
         }
-        if (array_key_exists('code', $parmas)) {
-            $this->code = $parmas['code'];
+        if (array_key_exists('detail', $parmas) && is_array($parmas['detail'])) {
+            $this->detail = $parmas['detail'];
         }
     }
+
 }

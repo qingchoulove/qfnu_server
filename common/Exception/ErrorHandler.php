@@ -33,22 +33,24 @@ class ErrorHandler extends Component
             $this->httpCode = 500;
             $this->message = '服务器内部错误，不想告诉你。';
             $this->code = 9999;
-
         }
         $result = [
             'message' => $this->message,
-            'code' => $this->code,
+            'code' => $this->code
         ];
-        $detail = [
+        if (!empty($exception->detail)) {
+            $result['detail'] = $exception->detail;
+        }
+        $other = [
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'trace' => explode("\n", $exception->getTraceAsString())
         ];
 
-        $logger->error(json_encode(array_merge($result, $detail)));
+        $logger->error(json_encode(array_merge($result, $other)));
 
         if ($displayErrorDetails) {
-            $result = array_merge($result, $detail);
+            $result = array_merge($result, $other);
         }
 
         return $response

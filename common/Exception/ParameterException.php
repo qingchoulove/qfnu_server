@@ -14,4 +14,5 @@ class ParameterException extends BaseException
     public $httpCode = 500;
     public $message = '参数错误';
     public $code = 10002;
+    public $detail = [];
 }
