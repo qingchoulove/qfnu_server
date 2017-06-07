@@ -89,8 +89,11 @@ class LibService extends BaseService
         $books = [];
         array_shift($parseTable);
         foreach ($parseTable as $value) {
-            array_pop($value);
-            $books[] = $value;
+            $books[] = [
+                'name' => $value[1],
+                'start_date' => $value[3],
+                'end_date' => $value[4]
+            ];
         }
         return $books;
     }
