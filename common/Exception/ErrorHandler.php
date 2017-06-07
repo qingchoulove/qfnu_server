@@ -8,39 +8,42 @@
 
 namespace common\exception;
 
-
+use Exception;
 use common\Component;
 
 class ErrorHandler extends Component
 {
-    private $httpCode;
-    private $message;
-    private $code;
+    private $httpCode = 500;
 
-    public function __invoke($request, $response, \Exception $exception)
+    public function __invoke($request, $response, Exception $exception)
     {
 
         $logger = $this->get('logger');
         $displayErrorDetails = $this->get('settings')['displayErrorDetails'];
 
-        if ($exception instanceof BaseException) {
+        if ($exception instanceof ParameterException) {
+            $result = [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'detail' => $exception->getDetail()
+            ];
+            $this->httpCode = $exception->getHttpCode();
+        } else if ($exception instanceof BaseException) {
             //如果是自定义异常，动态返回信息
-            $this->httpCode = $exception->httpCode;
-            $this->message = $exception->message;
-            $this->code = $exception->code;
+            $result = [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage()
+            ];
+            $this->httpCode = $exception->getHttpCode();
         } else {
             //如果是系统异常，返回统一码
+            $result = [
+                'code' => 500,
+                'message' => $displayErrorDetails ? $exception->getMessage() : '服务器错误'
+            ];
             $this->httpCode = 500;
-            $this->message = '服务器内部错误，不想告诉你。';
-            $this->code = 9999;
         }
-        $result = [
-            'message' => $this->message,
-            'code' => $this->code
-        ];
-        if (!empty($exception->detail)) {
-            $result['detail'] = $exception->detail;
-        }
+
         $other = [
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

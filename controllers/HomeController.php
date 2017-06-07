@@ -57,14 +57,7 @@ class HomeController extends BaseController
             //方式一：
             //throw new ParameterException();
             //方式二：
-            throw new ParameterException(
-                [
-                    'message' => 'text for exception',
-                    'detail' => [
-                        $validator->getError()
-                    ]
-                ]
-            );
+            throw new ParameterException('text for exception', $validator->getError());
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);

@@ -11,8 +11,28 @@ namespace common\exception;
 
 class ParameterException extends BaseException
 {
-    public $httpCode = 500;
-    public $message = '参数错误';
-    public $code = 10002;
-    public $detail = [];
+    protected $httpCode = 500;
+    protected $message = '参数错误';
+    protected $code = 10002;
+    protected $detail = [];
+
+    /**
+     * ParameterException constructor.
+     * @param string $message
+     * @param array $detail
+     */
+    public function __construct(string $message, array $detail = [])
+    {
+        $this->message = $message;
+        $this->detail = $detail;
+    }
+
+    /**
+     * 获取错误详情
+     * @return array
+     */
+    public function getDetail()
+    {
+        return $this->detail;
+    }
 }
