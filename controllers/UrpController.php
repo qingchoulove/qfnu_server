@@ -1,7 +1,6 @@
 <?php
 namespace controllers;
 
-use common\Util;
 use services\UrpService;
 use Slim\Http\Request;
 use Slim\Http\Response;
