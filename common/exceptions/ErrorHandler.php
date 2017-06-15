@@ -7,7 +7,7 @@ use Slim\Http\Response;
 
 class ErrorHandler extends Component
 {
-    public function __invoke(Request $request, Response $response, $exception)
+    public function __invoke(Request $request, Response $response, Exception $exception)
     {
         $logger = $this->get('logger');
         $displayErrorDetails = $this->get('settings')['displayErrorDetails'];
@@ -22,10 +22,6 @@ class ErrorHandler extends Component
             $httpCode = $exception->getHttpCode();
         } elseif ($exception instanceof BaseException) {
             $httpCode = $exception->getHttpCode();
-        } else {
-            if (!$displayErrorDetails) {
-                $body['message'] = '服务器内部错误';
-            }
         }
 
         $detail = [
