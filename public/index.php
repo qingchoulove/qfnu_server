@@ -14,10 +14,10 @@ require __DIR__ . '/../vendor/autoload.php';
 session_start();
 
 
-spl_autoload_register(function ($classname) {
-    $classname = str_replace('\\', '/', $classname);
-    if (is_file('../' .$classname . '.php')) {
-        require_once('../' .$classname . '.php');
+spl_autoload_register(function ($className) {
+    $className = str_replace('\\', '/', $className);
+    if (is_file('../' .$className . '.php')) {
+        require_once('../' .$className . '.php');
     }
 });
 
@@ -30,7 +30,7 @@ $container = $app->getContainer();
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->getContainer()->singleton(
     \Illuminate\Contracts\Debug\ExceptionHandler::class,
-    \common\DataBaseErrorHandler::class
+    \common\exceptions\DBErrorHandler::class
 );
 $capsule->addConnection($container['settings']['db']);
 $capsule->setAsGlobal();

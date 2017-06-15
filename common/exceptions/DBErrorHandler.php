@@ -1,8 +1,8 @@
 <?php
-namespace common;
+namespace common\exceptions;
 use Exception;
 
-class DataBaseErrorHandler implements \Illuminate\Contracts\Debug\ExceptionHandler
+class DBErrorHandler implements \Illuminate\Contracts\Debug\ExceptionHandler
 {
     public function report(Exception $e)
     {

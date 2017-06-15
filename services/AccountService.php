@@ -105,7 +105,7 @@ class AccountService extends BaseService
      * @param string $token
      * @throws Exception
      */
-    public function updateAccountToken($userId,  $token)
+    public function updateAccountToken($userId, $token)
     {
         $account = AccountModel::where('user_id', $userId)
             ->first();
