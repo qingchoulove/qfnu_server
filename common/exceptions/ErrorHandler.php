@@ -26,7 +26,6 @@ class ErrorHandler extends Component
                 $body['message'] = '服务器内部错误';
             }
         }
-
         $detail = [
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
