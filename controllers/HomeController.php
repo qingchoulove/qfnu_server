@@ -1,6 +1,7 @@
 <?php
 namespace controllers;
 
+use common\exceptions\FieldNotValidException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use services\AccountService;
@@ -25,7 +26,7 @@ class HomeController extends BaseController
     {
         $result = [
             'status' => true,
-            'message' => 'hello world'
+            'message' => '掌上曲园服务'
         ];
         return $response->withJson($result);
     }
@@ -35,21 +36,16 @@ class HomeController extends BaseController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws FieldNotValidException
      */
     public function login(Request $request, Response $response):Response
     {
-
-
         $data = $request->getParsedBody();
         //验证提交的登录信息
         $validator = (new LoginValidator($data));
 
         if (!$validator->validate()) {
-            $result = [
-                'status' => false,
-                'message' => $validator->getError()
-            ];
-            return $response->withJson($result);
+            throw new FieldNotValidException("请输入正确的参数", $validator->getError());
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);
@@ -90,4 +86,3 @@ class HomeController extends BaseController
         ]);
     }
 }
-

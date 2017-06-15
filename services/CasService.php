@@ -10,7 +10,6 @@ use Exception;
  */
 class CasService extends BaseService
 {
-
     const AUTHSERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login';
 
     /**
