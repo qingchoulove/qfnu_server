@@ -1,9 +1,11 @@
 <?php
 namespace controllers;
 
+use common\exceptions\FieldNotValidException;
 use services\LibService;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use validators\LibraryValidator;
 
 /**
  * Class LibraryController
@@ -35,11 +37,16 @@ class LibraryController extends BaseController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws FieldNotValidException
      */
     public function searchBook(Request $request, Response $response):Response
     {
         $userInfo = $this->get('session');
         $data = $request->getParsedBody();
+        $validator = new LibraryValidator($data);
+        if (!$validator->validate()) {
+            throw new FieldNotValidException('字段验证失败', $validator->getError());
+        }
         $books = $this->libService->searchBook($userInfo['user_id'], $data['keyword'], $data['page']);
         return $response->withJson([
             'status' => true,

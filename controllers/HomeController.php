@@ -2,6 +2,7 @@
 namespace controllers;
 
 use common\exceptions\FieldNotValidException;
+use common\exceptions\ParamNotValidException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use services\AccountService;
@@ -71,10 +72,14 @@ class HomeController extends BaseController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws ParamNotValidException
      */
     public function captcha(Request $request, Response $response):Response
     {
         $data = $request->getParsedBody();
+        if (empty($data['user_id'])) {
+            throw new ParamNotValidException("参数错误");
+        }
         $result['is_need'] = $this->casService->needCaptcha($data['user_id']);
         if ($result['is_need']) {
             $result['captcha'] = $this->casService->getCaptcha($data['user_id']);
