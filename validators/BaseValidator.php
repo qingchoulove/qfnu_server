@@ -1,9 +1,4 @@
 <?php
-/**
- * desc validator base
- * creator cn_bad_guy
- * update_time 2017/5/27
- */
 
 namespace validators;
 
@@ -36,6 +31,7 @@ class BaseValidator
     protected static $typeMsg = [
         'require' => ':attribute不能为空',
         'number' => ':attribute必须是数字',
+        'integer' => ':attribute必须是整数',
         'float' => ':attribute必须是浮点数',
         'boolean' => ':attribute必须是布尔值',
         'email' => ':attribute格式不符',
@@ -69,7 +65,6 @@ class BaseValidator
         'eq' => ':attribute必须等于 :rule',
         'unique' => ':attribute已存在',
         'regex' => ':attribute不符合指定规则',
-        'method' => '无效的请求类型',
     ];
 
     // 当前验证场景
@@ -83,9 +78,6 @@ class BaseValidator
 
     // 验证失败错误信息
     protected $error = [];
-
-    // 批量验证
-    protected $batch = true;
 
     /**
      * 构造函数
@@ -122,7 +114,7 @@ class BaseValidator
      * 设置验证场景
      * @access public
      * @param string|array $name 场景名或者场景设置数组
-     * @return Validate
+     * @return BaseValidator
      */
     public function scene($name)
     {
@@ -222,16 +214,10 @@ class BaseValidator
 
             if (true !== $result) {
                 // 没有返回true 则表示验证失败
-                if (!empty($this->batch)) {
-                    // 批量验证
-                    if (is_array($result)) {
-                        $this->error = array_merge($this->error, $result);
-                    } else {
-                        $this->error[$key] = $result;
-                    }
+                if (is_array($result)) {
+                    $this->error = array_merge($this->error, $result);
                 } else {
-                    $this->error = $result;
-                    return false;
+                    $this->error[$key] = $result;
                 }
             }
         }
@@ -438,7 +424,7 @@ class BaseValidator
      * @param array $data 验证数据
      * @return bool
      */
-    protected function is($value, $rule, $data = [])
+    protected function is($value, $rule)
     {
         switch ($rule) {
             case 'require':
@@ -486,7 +472,7 @@ class BaseValidator
                 $result = $this->filter($value, FILTER_VALIDATE_FLOAT);
                 break;
             case 'number':
-                $result = is_int($value + 0);
+                $result = is_int($value);
                 break;
             case 'integer':
                 // 是否为整型
