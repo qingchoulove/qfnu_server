@@ -1,6 +1,6 @@
 <?php
-
 namespace middlewares;
+
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -10,7 +10,6 @@ use Slim\Http\Response;
  */
 class LoggerMiddleware extends BaseMiddleware
 {
-
     public function __invoke(Request $request, Response $response, $next)
     {
         $method = $request->getMethod();
