@@ -19,8 +19,6 @@ class AuthMiddleware extends BaseMiddleware
             return $response->withStatus(400)
                 ->withJson(['status' => false, 'message' => '无权访问']);
         }
-        $account = $this->cache->get(Constants::AUTH_PREFIX . $authorization);
-        $this->set('session', unserialize($account));
         $response = $next($request, $response);
         return $response;
     }
