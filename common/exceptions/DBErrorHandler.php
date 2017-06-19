@@ -1,5 +1,6 @@
 <?php
 namespace common\exceptions;
+
 use Exception;
 
 class DBErrorHandler implements \Illuminate\Contracts\Debug\ExceptionHandler

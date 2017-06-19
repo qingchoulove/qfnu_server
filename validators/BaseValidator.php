@@ -145,7 +145,6 @@ class BaseValidator
      */
     public function validate()
     {
-
         $this->error = [];
         // 读取验证规则
         $rules = $this->rule;
@@ -223,7 +222,6 @@ class BaseValidator
         }
         return !empty($this->error) ? false : true;
     }
-
 
     /**
      * @param 过滤器
@@ -845,4 +843,3 @@ class BaseValidator
         return $scene;
     }
 }
-
