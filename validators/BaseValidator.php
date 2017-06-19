@@ -308,4 +308,3 @@ class BaseValidator extends Component
         return $this->_data;
     }
 }
-
