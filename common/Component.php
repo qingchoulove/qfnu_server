@@ -4,7 +4,6 @@ namespace common;
 
 class Component
 {
-
     protected static $app;
 
     public function setContainer($app)

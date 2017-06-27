@@ -56,7 +56,7 @@ class Util
      * @param string|null
      * @param string
      */
-    public static function GetFile($url,$cookie = null)
+    public static function GetFile($url, $cookie = null)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -76,7 +76,7 @@ class Util
      * 生成指定长度随机Key
      * @param integer $length [description]
      */
-    public static function RandomKey( $length = 32)
+    public static function RandomKey($length = 32)
     {
         if ($length > 32 || $length < 8) {
             $length = 32;
