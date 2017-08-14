@@ -45,7 +45,7 @@ class LibraryController extends BaseController
         $data = $request->getParsedBody();
         $validator = new LibraryValidator($data);
         if (!$validator->validate()) {
-            throw new FieldNotValidException('字段验证失败', $validator->getError());
+            throw new FieldNotValidException('字段验证失败', $validator->getErrors());
         }
         $books = $this->libService->searchBook($userInfo['user_id'], $data['keyword'], $data['page']);
         return $response->withJson([
