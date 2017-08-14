@@ -1,28 +1,34 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: SoftpaseFar
- * Date: 2017/6/3
- * Time: 10:36
- */
 
 namespace validators;
 
+/**
+ * 登录验证器
+ * Class LoginValidator
+ * @package validators
+ */
 class LoginValidator extends BaseValidator
 {
-    protected $rule = [
-        'user_id' => 'require',
-        'password' => 'require',
-    ];
+    public function attributes(): array
+    {
+        return [
+            'user_id' => '学号',
+            'password' => '密码',
+            'captcha' => '验证码'
+        ];
+    }
 
-    protected $message = [
-        'user_id.require' => '账号必须填写',
-        'password.require' => '密码必须填写',
-    ];
+    public function rules(): array
+    {
+        return [
+            [['user_id', 'password'], 'trim'],
+            [['user_id', 'password'], 'required', 'message' => '账号密码必须填写'],
+            ['user_id', 'number'],
+        ];
+    }
 
-    protected $field = [
-        'user_id' => '学号',
-        'password' => '密码',
-        'captcha' => '验证码'
-    ];
+    public function scenarios(): array
+    {
+        return [];
+    }
 }

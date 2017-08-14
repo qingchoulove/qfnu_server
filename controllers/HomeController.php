@@ -43,10 +43,9 @@ class HomeController extends BaseController
     {
         $data = $request->getParsedBody();
         //验证提交的登录信息
-        $validator = (new LoginValidator($data));
-
+        $validator = new LoginValidator($data);
         if (!$validator->validate()) {
-            throw new FieldNotValidException("请输入正确的参数", $validator->getError());
+            throw new FieldNotValidException("请输入正确的参数", $validator->getErrors());
         }
         $data = $validator->getAvailableAttribute();
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);

@@ -4,13 +4,17 @@ namespace services;
 use common\Util;
 use common\Constants;
 use Exception;
+use Predis\Client;
 
 /**
  * 曲阜师范大学信息门户
+ * Class CasService
+ * @package services
+ * @property Client $cache
  */
 class CasService extends BaseService
 {
-    const AUTHSERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login';
+    const AUTH_SERVER_BASE = 'http://ids.qfnu.edu.cn/authserver/login';
 
     /**
      * 登录信息门户
@@ -22,8 +26,8 @@ class CasService extends BaseService
      */
     public function loginCas(string $user, string $password, string $captcha = null):bool
     {
-        $url = self::AUTHSERVER_BASE .'?service=' . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
-        $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX.$user);
+        $url = self::AUTH_SERVER_BASE . '?service=' . Constants::$authServerTypeUrl[Constants::AUTHSERVER_TYPE_HOME];
+        $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
 
         $content = Util::Curl($url, $casCookie);
         if (strpos($content, '302 Found')) {
@@ -84,7 +88,7 @@ class CasService extends BaseService
             return false;
         }
         $casCookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $user);
-        $url = self::AUTHSERVER_BASE .'?service=' . Constants::$authServerTypeUrl[$type];
+        $url = self::AUTH_SERVER_BASE .'?service=' . Constants::$authServerTypeUrl[$type];
         $content = Util::Curl($url, $casCookie);
         preg_match('/http:\/\/\S+/', $content, $location);
         $content = Util::Curl($location[0]);
