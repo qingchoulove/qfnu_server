@@ -8,13 +8,20 @@ namespace validators;
  */
 class LibraryValidator extends BaseValidator
 {
-    protected $rule = [
-        'keyword' => 'require',
-        'page' => 'number|egt:1'
-    ];
+    public function attributes(): array
+    {
+        return [
+            'keyword' => '关键字',
+            'page' => '页码'
+        ];
+    }
 
-    protected $field = [
-        'keyword' => '关键字',
-        'page' => '页码'
-    ];
+    public function rules(): array
+    {
+        return [
+            ['keyword', 'required'],
+            ['page', 'number', 'min' => 1],
+            ['page', 'default', 'value' => 1]
+        ];
+    }
 }
