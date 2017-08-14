@@ -4,8 +4,14 @@ namespace services;
 use common\Util;
 use common\Constants;
 use models\AccountModel;
+use Predis\Client;
 use Exception;
 
+/**
+ * Class AccountService
+ * @package services
+ * @property Client $cache
+ */
 class AccountService extends BaseService
 {
 
