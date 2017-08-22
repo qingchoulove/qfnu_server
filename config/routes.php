@@ -3,6 +3,7 @@
 use controllers\HomeController;
 use controllers\UrpController;
 use controllers\LibraryController;
+use controllers\ClazzController;
 
 $authMiddleware = new middlewares\AuthMiddleware();
 
@@ -27,3 +28,7 @@ $app->group('/lib', function () {
     $this->get('/borrow', LibraryController::class . ':getBorrowBooks');
     $this->post('/search', LibraryController::class . ':searchBook');
 })->add($authMiddleware);
+// 分班查询路由
+$app->group('/clazz', function () {
+    $this->post('/search', ClazzController::class . ':getClazz');
+});
