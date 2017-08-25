@@ -17,7 +17,8 @@ class ClazzService extends BaseService
      */
     public function getClazzByCodeAndName(string $code, string $name)
     {
-        $clazz = ClazzModel::where(['code' => $code, 'name' => $name])
+        $clazz = ClazzModel::select(['std_id', 'name', 'code', 'class', 'major', 'institute'])
+            ->where(['code' => $code, 'name' => $name])
             ->first();
         return empty($clazz) ? [] : $clazz->toArray();
     }

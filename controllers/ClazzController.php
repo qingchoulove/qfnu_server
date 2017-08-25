@@ -30,6 +30,11 @@ class ClazzController extends BaseController
             throw new FieldNotValidException('参数错误', $validator->getErrors());
         }
         $data = $this->clazzService->getClazzByCodeAndName($params['code'], $params['name']);
+        if (!empty($data)) {
+           $start = substr($data['code'], 0, 6);
+           $end = substr($data['code'], -4);
+           $data['code'] = $start . '********' . $end;
+        }
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
