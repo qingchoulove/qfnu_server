@@ -2,7 +2,6 @@
 
 namespace validators;
 
-
 class ClazzValidator extends BaseValidator
 {
     public function attributes(): array

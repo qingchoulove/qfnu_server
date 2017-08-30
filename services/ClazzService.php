@@ -22,5 +22,4 @@ class ClazzService extends BaseService
             ->first();
         return empty($clazz) ? [] : $clazz->toArray();
     }
-
 }

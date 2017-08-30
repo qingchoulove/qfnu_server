@@ -46,7 +46,8 @@ class UrpService extends BaseService
             'name' => '姓名',
             'campus' => '校区',
             'faculty' => '系所',
-            'profession' => '专业方向'
+            'profession' => '专业',
+            'clazz' => '班级'
         ];
         $fieldValue = [];
         foreach ($fields as $key => $value) {
@@ -57,6 +58,10 @@ class UrpService extends BaseService
             $fieldValue[$key] = $value;
         }
         $fieldValue['campus'] = $fieldValue['campus'] === '曲阜' ? Constants::CAMPUS_QF : Constants::CAMPUS_RZ;
+        // 下载头像
+        $url = 'http://202.194.188.19/xjInfoAction.do?oper=img';
+        $portrait = Util::GetFile($url, $cookie);
+        $fieldValue['portrait'] = base64_encode($portrait);
         return $fieldValue;
     }
 

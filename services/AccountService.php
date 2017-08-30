@@ -46,7 +46,7 @@ class AccountService extends BaseService
             throw new Exception('用户不存在');
         }
         $data = $data->toArray();
-        if (!isset($data['name'])) {
+        if (empty($data['name'])) {
             $userInfo = $this->urpService->getUserInfo($userId);
             $userInfo['user_id'] = $userId;
             $this->updateAccount($userInfo);
@@ -113,14 +113,10 @@ class AccountService extends BaseService
      */
     public function updateAccountToken($userId, $token)
     {
-        $account = AccountModel::where('user_id', $userId)
-            ->first();
-        if (empty($account)) {
-            throw new Exception('用户不存在');
-        }
-        $this->cache->del(Constants::AUTH_PREFIX . $account->token);
-        $account->token = $token;
-        $account->save();
-        $this->cache->set(Constants::AUTH_PREFIX . $account->token, serialize($account->toArray()));
+        $account = $this->getAccountByUserId($userId);
+        $this->cache->del(Constants::AUTH_PREFIX . $account['token']);
+        AccountModel::where('user_id', $userId)
+            ->update(['token' => $token]);
+        $this->cache->set(Constants::AUTH_PREFIX . $token, serialize($account));
     }
 }

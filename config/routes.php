@@ -22,6 +22,7 @@ $app->group('/urp', function () {
     $this->get('/grade/fail', UrpController::class . ':getFailGrade');
     $this->get('/curriculum', UrpController::class . ':getCurriculum');
     $this->post('/free-room', UrpController::class . ':getFreeRoom');
+    $this->get('/info', UrpController::class . ':getInfo');
 })->add($authMiddleware);
 // 图书馆服务路由
 $app->group('/lib', function () {

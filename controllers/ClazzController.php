@@ -31,9 +31,10 @@ class ClazzController extends BaseController
         }
         $data = $this->clazzService->getClazzByCodeAndName($params['code'], $params['name']);
         if (!empty($data)) {
-           $start = substr($data['code'], 0, 6);
-           $end = substr($data['code'], -4);
-           $data['code'] = $start . '********' . $end;
+            //身份证出生日期填充*
+            $start = substr($data['code'], 0, 6);
+            $end = substr($data['code'], -4);
+            $data['code'] = $start . '********' . $end;
         }
         return $response->withJson([
             'status' => true,
