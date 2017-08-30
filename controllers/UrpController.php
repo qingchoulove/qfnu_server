@@ -1,6 +1,7 @@
 <?php
 namespace controllers;
 
+use common\Constants;
 use services\UrpService;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -97,6 +98,31 @@ class UrpController extends BaseController
             'status' => true,
             'message' => '获取成功',
             'data' => $rooms
+        ]);
+    }
+
+    /**
+     * 获取用户信息
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function getInfo(Request $request, Response $response):Response
+    {
+        $userInfo = $this->get('session');
+        $filterKeys = ['name', 'user_id', 'campus', 'faculty', 'profession', 'clazz', 'portrait'];
+        foreach ($userInfo as $key => $value) {
+            if (!in_array($key, $filterKeys)) {
+                unset($userInfo[$key]);
+            }
+            if ($key === 'campus') {
+                $userInfo[$key] = $value ==  Constants::CAMPUS_QF ? '曲阜校区' : '日照校区';
+            }
+        }
+        return $response->withJson([
+            'status' => true,
+            'message' => '获取成功',
+            'data' => $userInfo
         ]);
     }
 }
