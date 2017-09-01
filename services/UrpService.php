@@ -93,7 +93,24 @@ class UrpService extends BaseService
             }
             $grade[$value[0][0]] = $item;
         }
-        return $grade;
+        $model = [];
+        foreach ($grade as $key => $value) {
+            $list = [];
+            foreach ($value as $k => $v) {
+                $list[] = [
+                    'lesson_id' => $v[0] . $v[1],
+                    'name' => $v[2],
+                    'credit' => $v[4],
+                    'type' => $v[5],
+                    'score' => $v[6]
+                ];
+            }
+            $model[] = [
+                'term' => $key,
+                'list' => $list
+            ];
+        }
+        return $model;
     }
 
     /**
@@ -121,7 +138,15 @@ class UrpService extends BaseService
             return [];
         }
         foreach ($tableArr as $key => &$value) {
-            $value = $value[0];
+            $lesson = $value[0];
+            $value = [
+                'lesson_id' => $lesson[0] . trim($lesson[1]),
+                'name' => $lesson[2],
+                'credit' => $lesson[4],
+                'type' => $lesson[5],
+                'score' => $lesson[9],
+                'rank' => $lesson[10]
+            ];
         }
         return $tableArr;
     }
@@ -143,7 +168,14 @@ class UrpService extends BaseService
             $grade[] = Util::ParseTable($value);
         }
         foreach ($grade as $key => &$value) {
-            $value = $value[0];
+            $lesson = $value[0];
+            $value = [
+                'lesson_id' => $lesson[0] . $lesson[1],
+                'name' => $lesson[2],
+                'credit' => $lesson[4],
+                'type' => $lesson[5],
+                'score' => $lesson[6],
+            ];
         }
         return $grade;
     }
@@ -263,23 +295,29 @@ class UrpService extends BaseService
             $curriculum[$key] = array_fill(0, 11, []);
         }
         $nowWeek = Util::WeekNumber();
-        if ($nowWeek > 18) {
+        if ($nowWeek > 18 || $nowWeek < 1) {
             return $curriculum;
         }
         foreach ($lessons as $key => $value) {
-            if ($value['range'] == '单周' && $nowWeek % 2 == 0) {
-                continue;
+            $value['class_id'] = md5(json_encode($value));
+            $range = $value['range'];
+            if ($range == '单周') {
+                $range = range(1, 18, 2);
+            } else if ($range == '双周') {
+                $range = range(2, 18, 2);
+            } else if (strstr($range, '-')) {
+                $rangeArray = explode("-", $range);
+                $range = range($rangeArray[0], $rangeArray[1]);
+            } else {
+                $range[] = $range;
             }
-            if ($value['range'] == '双周' && $nowWeek % 2 == 1) {
-                continue;
-            }
-            if (!in_array($value['range'], ['单周', '双周', '1-18']) && $value['range'] != $nowWeek) {
+            if (!in_array($nowWeek, $range)) {
                 continue;
             }
             $num = $value['num'];
             $week = $value['week'];
             $session = $value['session'];
-            array_splice($value, 2, 4);
+            array_splice($value, 3, 3);
             for ($i = 0; $i < $num; $i++) {
                 $curriculum[$week][$session + $i] = $value;
             }
