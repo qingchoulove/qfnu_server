@@ -80,7 +80,8 @@ class CasService extends BaseService
     public function login(string $user, string $password, int $type):bool
     {
         // 检查本系统cookie是否存在
-        if ($this->cache->exists(Constants::CAS_COOKIE_PREFIX . $type . '_' . $user)) {
+        $cookie = $this->cache->get(Constants::CAS_COOKIE_PREFIX . $type . '_' . $user);
+        if (!empty($cookie)) {
             return true;
         }
         // 检查CAS cookie是否失效
