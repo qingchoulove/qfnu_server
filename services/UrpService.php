@@ -275,8 +275,9 @@ class UrpService extends BaseService
                     'session' => intval($tr[13]) - 1,
                     'num' => intval($tr[14]),
                     'building' => $tr[16],
-                    'classroom' => $tr[17]
-
+                    'classroom' => $tr[17],
+                    'type' => $tr[5],
+                    'source' => $tr[4]
                 ];
             } else {
                 $lesson = array_slice($lessons, -1)[0];
@@ -294,12 +295,8 @@ class UrpService extends BaseService
         foreach ($curriculum as $key => $value) {
             $curriculum[$key] = array_fill(0, 11, []);
         }
-        $nowWeek = Util::WeekNumber();
-        if ($nowWeek > 18 || $nowWeek < 1) {
-            return $curriculum;
-        }
         foreach ($lessons as $key => $value) {
-            $value['class_id'] = md5(json_encode($value));
+            $value['class_id'] = md5(($value['name'] . $value['teacher']));
             $range = $value['range'];
             if ($range == '单周') {
                 $range = range(1, 18, 2);
@@ -311,15 +308,14 @@ class UrpService extends BaseService
             } else {
                 $range[] = $range;
             }
-            if (!in_array($nowWeek, $range)) {
-                continue;
-            }
             $num = $value['num'];
             $week = $value['week'];
             $session = $value['session'];
             array_splice($value, 3, 3);
+            $value['week'] = $range;
+
             for ($i = 0; $i < $num; $i++) {
-                $curriculum[$week][$session + $i] = $value;
+                $curriculum[$week][$session + $i][] = $value;
             }
         }
         return $curriculum;
