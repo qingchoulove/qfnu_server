@@ -2,6 +2,7 @@
 namespace controllers;
 
 use common\Constants;
+use common\Util;
 use services\UrpService;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -77,7 +78,10 @@ class UrpController extends BaseController
         return $response->withJson([
             'status' => true,
             'message' => '获取成功',
-            'data' => $curriculum
+            'data' => [
+                'lessons' => $curriculum,
+                'week' => Util::WeekNumber(),
+            ]
         ]);
     }
 
