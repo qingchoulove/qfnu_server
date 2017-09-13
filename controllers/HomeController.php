@@ -8,6 +8,7 @@ use Slim\Http\Response;
 use services\AccountService;
 use services\CasService;
 use common\Util;
+use common\Constants;
 use validators\LoginValidator;
 
 /**
@@ -48,6 +49,7 @@ class HomeController extends BaseController
             throw new FieldNotValidException("请输入正确的参数", $validator->getErrors());
         }
         $data = $validator->getAvailableAttribute();
+        $this->cache->del(Constants::CAS_COOKIE_PREFIX . $data['user_id']);
         $login = $this->casService->loginCas($data['user_id'], $data['password'], $data['captcha']);
         $result = [
             'status' => false,
