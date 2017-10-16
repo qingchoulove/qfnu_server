@@ -62,7 +62,10 @@ class HomeController extends BaseController
             $result = [
                 'status' => true,
                 'message' => '登录成功',
-                'data' => $token
+                'data' => [
+                    'token' => $token,
+                    'cookie' => $this->cache->get(Constants::CAS_COOKIE_PREFIX . $data['user_id'])
+                ]
             ];
         }
         return $response->withJson($result);
