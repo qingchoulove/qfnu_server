@@ -306,7 +306,7 @@ class UrpService extends BaseService
                 $rangeArray = explode("-", $range);
                 $range = range($rangeArray[0], $rangeArray[1]);
             } else {
-                $range[] = $range;
+                $range = [$range];
             }
             $num = $value['num'];
             $week = $value['week'];
