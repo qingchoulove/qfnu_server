@@ -4,6 +4,7 @@ use controllers\HomeController;
 use controllers\UrpController;
 use controllers\LibraryController;
 use controllers\ClazzController;
+use controllers\NoticeController;
 
 $authMiddleware = new middlewares\AuthMiddleware();
 
@@ -32,4 +33,11 @@ $app->group('/lib', function () {
 // 分班查询路由
 $app->group('/clazz', function () {
     $this->post('/search', ClazzController::class . ':getClazz');
+});
+// 通知管理
+$app->group('/notice', function() {
+    $this->get('', NoticeController::class . ':getNoticeList');
+    $this->post('/add', NoticeController::class . ':addNotice');
+    $this->post('/update', NoticeController::class . ':updateNotice');
+    $this->post('/delete', NoticeController::class . ':deleteNotice');
 });
