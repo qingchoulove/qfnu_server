@@ -7,7 +7,6 @@ use common\Util;
 
 class IPFilterMiddleware extends BaseMiddleware
 {
-
     private $path = [];
     private $allow = [];
     private $deny = [];
@@ -43,7 +42,7 @@ class IPFilterMiddleware extends BaseMiddleware
         if (empty($clinetIp)) {
             return $response->withStatus(403)->withJson(['status' => false, 'message' => '爬虫嫌疑']);
         }
-        foreach($this->path as $key => $value) {
+        foreach ($this->path as $key => $value) {
             if ($value !== $path) {
                 continue;
             }

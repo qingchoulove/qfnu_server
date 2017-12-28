@@ -36,7 +36,7 @@ $app->group('/clazz', function () {
     $this->post('/search', ClazzController::class . ':getClazz');
 });
 // 通知管理
-$app->group('/notice', function() {
+$app->group('/notice', function () {
     $this->get('', NoticeController::class . ':getNoticeList');
     $this->post('/add', NoticeController::class . ':addNotice');
     $this->post('/update', NoticeController::class . ':updateNotice');

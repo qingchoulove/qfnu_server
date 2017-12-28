@@ -300,9 +300,9 @@ class UrpService extends BaseService
             $range = $value['range'];
             if ($range == '单周') {
                 $range = range(1, 18, 2);
-            } else if ($range == '双周') {
+            } elseif ($range == '双周') {
                 $range = range(2, 18, 2);
-            } else if (strstr($range, '-')) {
+            } elseif (strstr($range, '-')) {
                 $rangeArray = explode("-", $range);
                 $range = range($rangeArray[0], $rangeArray[1]);
             } else {
