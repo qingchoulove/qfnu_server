@@ -39,7 +39,7 @@ class UrpService extends BaseService
     public function getUserInfo(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/xjInfoAction.do?oper=xjxx';
+        $url = 'http://202.194.188.21/xjInfoAction.do?oper=xjxx';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         $fields = [
@@ -59,7 +59,7 @@ class UrpService extends BaseService
         }
         $fieldValue['campus'] = $fieldValue['campus'] === '曲阜' ? Constants::CAMPUS_QF : Constants::CAMPUS_RZ;
         // 下载头像
-        $url = 'http://202.194.188.19/xjInfoAction.do?oper=img';
+        $url = 'http://202.194.188.21/xjInfoAction.do?oper=img';
         $portrait = Util::GetFile($url, $cookie);
         $fieldValue['portrait'] = base64_encode($portrait);
         return $fieldValue;
@@ -73,7 +73,7 @@ class UrpService extends BaseService
     public function getAllGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=qbinfo';
+        $url = 'http://202.194.188.21/gradeLnAllAction.do?type=ln&oper=qbinfo';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
 
@@ -122,7 +122,7 @@ class UrpService extends BaseService
     public function getCurrentGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/bxqcjcxAction.do';
+        $url = 'http://202.194.188.21/bxqcjcxAction.do';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         if (strstr($content, "开关已关闭")) {
@@ -159,7 +159,7 @@ class UrpService extends BaseService
     public function getFailingGrade(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/gradeLnAllAction.do?type=ln&oper=bjg';
+        $url = 'http://202.194.188.21/gradeLnAllAction.do?type=ln&oper=bjg';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all("'<tr class=[^>]*?>.*?</tr>'si", $content, $table);
@@ -200,9 +200,9 @@ class UrpService extends BaseService
             return unserialize($this->cache->get($paramKey));
         }
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/xszxcxAction.do?oper=xszxcx_lb';
+        $url = 'http://202.194.188.21/xszxcxAction.do?oper=xszxcx_lb';
         Util::Curl($url, $cookie);
-        $url = 'http://202.194.188.19/xszxcxAction.do?oper=tjcx';
+        $url = 'http://202.194.188.21/xszxcxAction.do?oper=tjcx';
         $params = [
             'zxxnxq' => $schoolYear,
             'zxXaq' => $campus,
@@ -241,7 +241,7 @@ class UrpService extends BaseService
     public function getEvaluationList(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/jxpgXsAction.do';
+        $url = 'http://202.194.188.21/jxpgXsAction.do';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all('/\d+#@\d+#@\S+#@\S+#@\S+#@\d+/', $content, $list);
@@ -259,7 +259,7 @@ class UrpService extends BaseService
     public function getCurriculum(string $userId):array
     {
         $cookie = $this->getCookie($userId);
-        $url = 'http://202.194.188.19/xkAction.do?actionType=6';
+        $url = 'http://202.194.188.21/xkAction.do?actionType=6';
         $content = Util::Curl($url, $cookie);
         $content = iconv('GB2312', 'UTF-8', $content);
         preg_match_all('#<tr.*?onMouseOut[^>]*?>[\s\S]*?</tr>#i', $content, $table);
